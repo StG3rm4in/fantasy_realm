@@ -1,0 +1,5 @@
+services:
+    App\Service\MongoLogService:
+        arguments:
+            $mongoUrl: '%env(MONGODB_URL)%'
+            $mongoDb: '%env(MONGODB_DB)%'

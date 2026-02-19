@@ -1,0 +1,154 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription - FantasyRealm Online{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="text-center mb-4">
+                <h1 class="display-6 fw-bold mb-3">
+                    <i class="bi bi-person-plus text-primary" aria-hidden="true"></i>
+                    Créer un compte
+                </h1>
+                <p class="text-secondary">Rejoignez la communauté FantasyRealm Online et créez vos héros de légende.</p>
+            </div>
+
+            <div class="card bg-dark border-secondary">
+                <div class="card-body p-4">
+                    <form method="post" novalidate>
+                        <input type="hidden" name="_token" value="{{ csrf_token('inscription') }}">
+                        <div class="mb-3">
+                            <label for="pseudo" class="form-label">
+                                <i class="bi bi-person text-primary me-1" aria-hidden="true"></i>
+                                Pseudo
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="pseudo"
+                                   name="pseudo"
+                                   required
+                                   minlength="3"
+                                   maxlength="50"
+                                   placeholder="VotrePseudo"
+                                   autocomplete="username"
+                                   aria-describedby="pseudoHelp">
+                            <div id="pseudoHelp" class="form-text">Entre 3 et 50 caractères. Ce pseudo sera visible par la communauté.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                <i class="bi bi-envelope text-primary me-1" aria-hidden="true"></i>
+                                Adresse email
+                            </label>
+                            <input type="email"
+                                   class="form-control"
+                                   id="email"
+                                   name="email"
+                                   required
+                                   maxlength="255"
+                                   placeholder="votre@email.com"
+                                   autocomplete="email"
+                                   aria-describedby="emailHelp">
+                            <div id="emailHelp" class="form-text">Votre adresse email ne sera jamais partagée.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">
+                                <i class="bi bi-key text-primary me-1" aria-hidden="true"></i>
+                                Mot de passe
+                            </label>
+                            <div class="input-group">
+                                <input type="password"
+                                       class="form-control"
+                                       id="password"
+                                       name="password"
+                                       required
+                                       minlength="12"
+                                       placeholder="Minimum 12 caractères"
+                                       autocomplete="new-password"
+                                       aria-describedby="passwordStrengthHelp">
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword" aria-label="Afficher ou masquer le mot de passe">
+                                    <i class="bi bi-eye" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <div id="passwordStrengthHelp" class="form-text">
+                                Minimum 12 caractères avec majuscules, minuscules, chiffres et caractères spéciaux.
+                            </div>
+
+                            {# Password strength indicator #}
+                            <div class="mt-2">
+                                <div class="progress" role="progressbar" aria-label="Force du mot de passe" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="height: 8px;">
+                                    <div class="progress-bar" id="passwordStrengthBar" style="width: 0%;"></div>
+                                </div>
+                                <small id="passwordStrengthText" class="text-secondary mt-1 d-block"></small>
+                            </div>
+
+                            <ul class="list-unstyled small mt-2 mb-0" id="passwordCriteria">
+                                <li id="criteria-length" class="text-secondary">
+                                    <i class="bi bi-x-circle" aria-hidden="true"></i> Minimum 12 caractères
+                                </li>
+                                <li id="criteria-uppercase" class="text-secondary">
+                                    <i class="bi bi-x-circle" aria-hidden="true"></i> Au moins une majuscule
+                                </li>
+                                <li id="criteria-lowercase" class="text-secondary">
+                                    <i class="bi bi-x-circle" aria-hidden="true"></i> Au moins une minuscule
+                                </li>
+                                <li id="criteria-digit" class="text-secondary">
+                                    <i class="bi bi-x-circle" aria-hidden="true"></i> Au moins un chiffre
+                                </li>
+                                <li id="criteria-special" class="text-secondary">
+                                    <i class="bi bi-x-circle" aria-hidden="true"></i> Au moins un caractère spécial
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="confirmPassword" class="form-label">
+                                <i class="bi bi-key-fill text-primary me-1" aria-hidden="true"></i>
+                                Confirmer le mot de passe
+                            </label>
+                            <input type="password"
+                                   class="form-control"
+                                   id="confirmPassword"
+                                   name="confirm_password"
+                                   required
+                                   minlength="12"
+                                   placeholder="Retapez votre mot de passe"
+                                   autocomplete="new-password">
+                            <div id="confirmPasswordFeedback" class="form-text"></div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-text">
+                                <i class="bi bi-info-circle text-primary me-1" aria-hidden="true"></i>
+                                En créant un compte, vous acceptez nos
+                                <a href="{{ path('app_cgv') }}" class="text-primary">conditions générales de vente</a>
+                                et notre
+                                <a href="{{ path('app_politique_confidentialite') }}" class="text-primary">politique de confidentialité</a>.
+                                Vos données personnelles sont traitées conformément au RGPD.
+                                Vous pouvez exercer vos droits d'accès, de rectification et de suppression à tout moment
+                                depuis votre espace personnel ou en nous contactant.
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-2 d-flex align-items-center justify-content-center gap-2">
+                            <i class="bi bi-person-plus" aria-hidden="true"></i>
+                            Créer mon compte
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <p class="text-secondary">
+                    Déjà un compte ?
+                    <a href="{{ path('app_login') }}" class="text-primary text-decoration-none fw-semibold">
+                        Se connecter
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

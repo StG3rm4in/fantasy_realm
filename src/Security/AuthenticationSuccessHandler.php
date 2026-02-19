@@ -1,0 +1,38 @@
+<?php
+
+namespace App\Security;
+
+use App\Entity\User;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
+
+class AuthenticationSuccessHandler implements AuthenticationSuccessHandlerInterface
+{
+    public function __construct(private RouterInterface $router)
+    {
+    }
+
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token): RedirectResponse
+    {
+        $user = $token->getUser();
+
+        if ($user instanceof User && $user->isMotDePasseAModifier()) {
+            return new RedirectResponse($this->router->generate('app_change_password'));
+        }
+
+        $roles = $token->getRoleNames();
+
+        if (in_array('ROLE_ADMIN', $roles, true)) {
+            return new RedirectResponse($this->router->generate('app_espace_admin'));
+        }
+
+        if (in_array('ROLE_EMPLOYEE', $roles, true)) {
+            return new RedirectResponse($this->router->generate('app_espace_employe'));
+        }
+
+        return new RedirectResponse($this->router->generate('app_espace_utilisateur'));
+    }
+}

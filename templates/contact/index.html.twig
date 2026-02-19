@@ -1,0 +1,83 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Contact - FantasyRealm Online{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            {# Header #}
+            <div class="text-center mb-5 animate-fade-in">
+                <h1 class="display-5 fw-bold mb-3">Nous contacter</h1>
+                <p class="text-secondary mx-auto max-w-500">
+                    Une question, une suggestion ou un problème ? Notre équipe est là pour vous aider.
+                </p>
+            </div>
+
+            {# Contact Form #}
+            <div class="card card-fantasy animate-fade-in">
+                <div class="card-header bg-transparent border-bottom border-secondary">
+                    <h2 class="h5 mb-0 d-flex align-items-center gap-2">
+                        <i class="bi bi-chat-dots text-primary"></i>
+                        Formulaire de contact
+                    </h2>
+                </div>
+                <div class="card-body p-4">
+                    <p class="text-secondary small mb-4">
+                        Remplissez le formulaire ci-dessous et nous vous répondrons rapidement.
+                    </p>
+
+                    <form method="post" novalidate>
+                        <input type="hidden" name="_token" value="{{ csrf_token('contact-form') }}">
+                        <div class="row g-4">
+                            <div class="col-sm-6">
+                                <label for="email" class="form-label">
+                                    <i class="bi bi-envelope text-primary me-1"></i>
+                                    Email
+                                </label>
+                                <input type="email" class="form-control" id="email" name="email"
+                                       value="{{ app.user ? app.user.email : '' }}"
+                                       placeholder="votre@email.com" required maxlength="255"
+                                       {{ app.user ? 'readonly' : '' }}>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label for="username" class="form-label">
+                                    <i class="bi bi-person text-primary me-1"></i>
+                                    Pseudo
+                                </label>
+                                <input type="text" class="form-control" id="username" name="pseudo"
+                                       value="{{ app.user ? app.user.pseudo : '' }}"
+                                       placeholder="VotrePseudo" required maxlength="50"
+                                       {{ app.user ? 'readonly' : '' }}>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="message" class="form-label">
+                                    <i class="bi bi-chat-text text-primary me-1"></i>
+                                    Message
+                                </label>
+                                <textarea class="form-control" id="message" name="message" rows="6"
+                                          placeholder="Décrivez votre demande..." required
+                                          minlength="10" maxlength="1000"></textarea>
+                                <div class="form-text d-flex justify-content-between">
+                                    <span>Minimum 10 caractères</span>
+                                    <span id="charCount">0/1000</span>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-hero d-flex align-items-center gap-2">
+                                    <i class="bi bi-send"></i>
+                                    Envoyer le message
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

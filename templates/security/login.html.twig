@@ -1,0 +1,92 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion - FantasyRealm Online{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="text-center mb-4">
+                <h1 class="display-6 fw-bold mb-3">
+                    <i class="bi bi-shield-lock text-primary" aria-hidden="true"></i>
+                    Connexion
+                </h1>
+                <p class="text-secondary">Accédez à votre espace FantasyRealm Online.</p>
+            </div>
+
+            {% if error %}
+                <div class="alert alert-danger d-flex align-items-center" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2" aria-hidden="true"></i>
+                    <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                </div>
+            {% endif %}
+
+            <div class="card bg-dark border-secondary">
+                <div class="card-body p-4">
+                    <form method="post" novalidate>
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                <i class="bi bi-envelope text-primary me-1" aria-hidden="true"></i>
+                                Adresse email
+                            </label>
+                            <input type="email"
+                                   class="form-control"
+                                   id="email"
+                                   name="_username"
+                                   value="{{ last_username }}"
+                                   placeholder="votre@email.com"
+                                   required
+                                   autocomplete="email"
+                                   autofocus
+                                   aria-describedby="emailHelp">
+                            <div id="emailHelp" class="form-text">Saisissez l'email utilisé lors de votre inscription.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">
+                                <i class="bi bi-key text-primary me-1" aria-hidden="true"></i>
+                                Mot de passe
+                            </label>
+                            <div class="input-group">
+                                <input type="password"
+                                       class="form-control"
+                                       id="password"
+                                       name="_password"
+                                       required
+                                       autocomplete="current-password"
+                                       placeholder="Votre mot de passe"
+                                       aria-describedby="togglePassword">
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword" aria-label="Afficher ou masquer le mot de passe">
+                                    <i class="bi bi-eye" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <a href="{{ path('app_forgot_password') }}" class="small text-primary text-decoration-none">
+                                Mot de passe oublié ?
+                            </a>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-2 d-flex align-items-center justify-content-center gap-2">
+                            <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>
+                            Se connecter
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <p class="text-secondary">
+                    Pas encore de compte ?
+                    <a href="{{ path('app_register') }}" class="text-primary text-decoration-none fw-semibold">
+                        Créer un compte
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

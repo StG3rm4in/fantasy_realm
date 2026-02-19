@@ -1,0 +1,217 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}FantasyRealm Online - Créez votre Légende{% endblock %}
+
+{% block body %}
+{# Hero Section #}
+<section class="hero-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center animate-fade-in">
+                {# Badge #}
+                <div class="d-inline-flex align-items-center gap-2 rounded-pill px-3 py-2 mb-4 badge-primary">
+                    <i class="bi bi-stars"></i>
+                    <span>Bienvenue dans FantasyRealm Online</span>
+                </div>
+
+                {# Title #}
+                <h1 class="display-3 fw-bold mb-4">
+                    <span class="d-block">Créez votre</span>
+                    <span class="d-block text-gradient">Légende</span>
+                </h1>
+
+                {# Description #}
+                <p class="lead text-secondary mb-5 mx-auto" style="max-width: 600px;">
+                    PixelVerse Studios vous invite à créer, personnaliser et partager
+                    vos héros de légende. Rejoignez une communauté de créateurs passionnés.
+                </p>
+
+                {# CTA Buttons #}
+                <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+                    {% if app.user %}
+                        <a href="{{ path('app_espace_utilisateur') }}" class="btn btn-hero btn-lg d-inline-flex align-items-center gap-2">
+                            <i class="bi bi-magic"></i>
+                            Mes personnages
+                        </a>
+                        <a href="{{ path('app_personnages') }}" class="btn btn-hero-outline btn-lg">
+                            Galerie communautaire
+                        </a>
+                    {% else %}
+                        <a href="{{ path('app_register') }}" class="btn btn-hero btn-lg d-inline-flex align-items-center gap-2">
+                            <i class="bi bi-lightning-charge-fill"></i>
+                            Créer un compte
+                        </a>
+                        <a href="{{ path('app_personnages') }}" class="btn btn-hero-outline btn-lg">
+                            Voir les personnages
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# Section PixelVerse Studios — Présentation de l'entreprise #}
+<section class="py-5">
+    <div class="container py-5">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="d-inline-flex align-items-center gap-2 rounded-pill px-3 py-2 mb-4 badge-primary">
+                    <i class="bi bi-building"></i>
+                    <span>À propos de nous</span>
+                </div>
+                <h2 class="display-5 fw-bold mb-4">PixelVerse Studios</h2>
+                <p class="text-secondary mb-4">
+                    Fondée par des passionnés de jeux vidéo, <strong>PixelVerse Studios</strong> est une société
+                    de développement spécialisée dans les jeux de rôle en ligne massivement multijoueurs (MMORPG).
+                    Reconnue pour l'innovation et la qualité de ses titres, elle place l'expérience joueur
+                    au cœur de chaque projet.
+                </p>
+                <p class="text-secondary mb-4">
+                    Notre mission : offrir des univers immersifs où chaque joueur peut exprimer sa créativité,
+                    forger sa légende et rejoindre une communauté mondiale de créateurs passionnés.
+                </p>
+                <div class="row g-3 mt-2">
+                    <div class="col-6">
+                        <div class="d-flex align-items-center gap-2 text-secondary">
+                            <i class="bi bi-people-fill text-primary"></i>
+                            <span class="small">Communauté mondiale</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="d-flex align-items-center gap-2 text-secondary">
+                            <i class="bi bi-shield-fill-check text-primary"></i>
+                            <span class="small">Plateforme sécurisée</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="d-flex align-items-center gap-2 text-secondary">
+                            <i class="bi bi-controller text-primary"></i>
+                            <span class="small">Expérience immersive</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="d-flex align-items-center gap-2 text-secondary">
+                            <i class="bi bi-star-fill text-primary"></i>
+                            <span class="small">Innovation continue</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card card-fantasy p-5 text-center">
+                    <i class="bi bi-joystick text-primary" style="font-size: 5rem;"></i>
+                    <h3 class="h4 fw-bold mt-4 mb-3">Notre expertise MMORPG</h3>
+                    <p class="text-secondary mb-0">
+                        Des années de savoir-faire dans la création d'expériences de jeu de rôle
+                        en ligne, alliant performance technique et design créatif.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# Section FantasyRealm Online — Présentation du jeu #}
+<section class="py-5" style="background: rgba(30, 30, 46, 0.5);">
+    <div class="container py-5">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6 order-lg-2">
+                <div class="d-inline-flex align-items-center gap-2 rounded-pill px-3 py-2 mb-4 badge-primary">
+                    <i class="bi bi-globe2"></i>
+                    <span>Le jeu</span>
+                </div>
+                <h2 class="display-5 fw-bold mb-4">FantasyRealm Online</h2>
+                <p class="text-secondary mb-4">
+                    Plongez dans un univers fantastique épique où magie, aventure et heroïsme se côtoient.
+                    <strong>FantasyRealm Online</strong> vous invite à explorer des terres mystérieuses,
+                    affronter des créatures redoutables et accomplir des quêtes légendaires.
+                </p>
+                <p class="text-secondary mb-4">
+                    Créez le héros de votre imagination : choisissez son apparence, forgez son équipement,
+                    et écrivez votre propre légende au sein d'une communauté de joueurs passionnés du monde entier.
+                </p>
+                <ul class="list-unstyled text-secondary">
+                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Exploration d'un monde ouvert fantastique</li>
+                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Combats épiques contre des monstres légendaires</li>
+                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Quêtes et scénarios immersifs</li>
+                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Personnalisation avancée de vos avatars</li>
+                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Multijoueur massivement en ligne</li>
+                </ul>
+            </div>
+            <div class="col-lg-6 order-lg-1">
+                <div class="card card-fantasy p-5 text-center">
+                    <i class="bi bi-fire text-warning" style="font-size: 5rem;"></i>
+                    <h3 class="h4 fw-bold mt-4 mb-3">Un monde vous attend</h3>
+                    <p class="text-secondary mb-0">
+                        Rejoignez des milliers de joueurs dans l'univers de FantasyRealm Online.
+                        Votre aventure commence ici, avec la création de votre personnage unique.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# Features Section #}
+<section class="py-5" style="background: rgba(30, 30, 46, 0.3);">
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">Pourquoi FantasyRealm Online ?</h2>
+            <p class="text-secondary mt-3 mx-auto" style="max-width: 600px;">
+                Une plateforme complète pour donner vie à vos personnages de fantasy.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            {% for feature in features %}
+                <div class="col-md-6 col-lg-3">
+                    <div class="card card-fantasy h-100 p-4 animate-fade-in" style="animation-delay: {{ loop.index * 100 }}ms;">
+                        <div class="feature-icon mb-3">
+                            <i class="bi {{ feature.icon }} fs-4"></i>
+                        </div>
+                        <h3 class="h5 fw-semibold mb-2">{{ feature.title }}</h3>
+                        <p class="text-secondary small mb-0">{{ feature.description }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{# CTA Section #}
+<section class="py-5">
+    <div class="container py-5">
+        <div class="card card-fantasy position-relative overflow-hidden">
+            <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(245, 158, 11, 0.05) 100%);"></div>
+            <div class="card-body position-relative py-5 px-4 text-center">
+                {% if app.user %}
+                    <h2 class="h3 fw-bold mb-3">Que souhaitez-vous faire, {{ app.user.pseudo }} ?</h2>
+                    <p class="text-secondary mb-4 mx-auto" style="max-width: 500px;">
+                        Créez un nouveau personnage ou explorez la galerie de la communauté.
+                    </p>
+                    <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+                        <a href="{{ path('app_personnage_create') }}" class="btn btn-hero btn-lg d-inline-flex align-items-center gap-2">
+                            <i class="bi bi-plus-circle"></i>
+                            Créer un personnage
+                        </a>
+                        <a href="{{ path('app_personnages') }}" class="btn btn-hero-outline btn-lg d-inline-flex align-items-center gap-2">
+                            <i class="bi bi-grid-3x3-gap"></i>
+                            Explorer la galerie
+                        </a>
+                    </div>
+                {% else %}
+                    <h2 class="h3 fw-bold mb-3">Prêt à commencer votre aventure ?</h2>
+                    <p class="text-secondary mb-4 mx-auto" style="max-width: 500px;">
+                        Inscrivez-vous gratuitement et commencez à créer vos personnages dès maintenant.
+                    </p>
+                    <a href="{{ path('app_register') }}" class="btn btn-hero btn-lg d-inline-flex align-items-center gap-2">
+                        <i class="bi bi-stars"></i>
+                        Rejoindre la communauté
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

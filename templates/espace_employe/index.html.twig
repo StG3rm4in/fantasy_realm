@@ -1,0 +1,773 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace Employe - FantasyRealm Online{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    {# En-tete #}
+    <div class="mb-5">
+        <div class="d-flex align-items-center gap-3 mb-2">
+            <i class="bi bi-shield-check fs-2 text-primary" aria-hidden="true"></i>
+            <h1 class="display-5 fw-bold mb-0">Espace Employe</h1>
+        </div>
+        <p class="text-secondary">
+            Moderation des contenus, gestion des utilisateurs et du catalogue.
+        </p>
+    </div>
+
+    {# Navigation par onglets #}
+    <ul class="nav nav-tabs nav-fill mb-4" id="employeeTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active d-flex align-items-center justify-content-center gap-2"
+                    id="personnages-tab" data-bs-toggle="tab" data-bs-target="#personnages-panel"
+                    type="button" role="tab" aria-controls="personnages-panel" aria-selected="true">
+                <i class="bi bi-controller" aria-hidden="true"></i>
+                <span class="d-none d-sm-inline">Personnages</span>
+                {% if pendingCount > 0 %}
+                    <span class="badge bg-warning text-dark">{{ pendingCount }}</span>
+                {% endif %}
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link d-flex align-items-center justify-content-center gap-2"
+                    id="avis-tab" data-bs-toggle="tab" data-bs-target="#avis-panel"
+                    type="button" role="tab" aria-controls="avis-panel" aria-selected="false">
+                <i class="bi bi-star" aria-hidden="true"></i>
+                <span class="d-none d-sm-inline">Avis</span>
+                {% if pendingAvisCount > 0 %}
+                    <span class="badge bg-warning text-dark">{{ pendingAvisCount }}</span>
+                {% endif %}
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link d-flex align-items-center justify-content-center gap-2"
+                    id="utilisateurs-tab" data-bs-toggle="tab" data-bs-target="#utilisateurs-panel"
+                    type="button" role="tab" aria-controls="utilisateurs-panel" aria-selected="false">
+                <i class="bi bi-people" aria-hidden="true"></i>
+                <span class="d-none d-sm-inline">Utilisateurs</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link d-flex align-items-center justify-content-center gap-2"
+                    id="articles-tab" data-bs-toggle="tab" data-bs-target="#articles-panel"
+                    type="button" role="tab" aria-controls="articles-panel" aria-selected="false">
+                <i class="bi bi-bag" aria-hidden="true"></i>
+                <span class="d-none d-sm-inline">Articles</span>
+            </button>
+        </li>
+    </ul>
+
+    {# Contenu des onglets #}
+    <div class="tab-content" id="employeeTabsContent">
+
+        {# ================================================================
+           ONGLET PERSONNAGES
+        ================================================================ #}
+        <div class="tab-pane fade show active" id="personnages-panel" role="tabpanel" aria-labelledby="personnages-tab">
+            {# Statistiques #}
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <div class="card bg-dark border-secondary">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-hourglass-split fs-2 text-warning mb-2" aria-hidden="true"></i>
+                            <h3 class="h2 mb-1">{{ pendingPersonnages|length }}</h3>
+                            <p class="text-secondary small mb-0">En attente</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-dark border-secondary">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-check-circle fs-2 text-success mb-2" aria-hidden="true"></i>
+                            <h3 class="h2 mb-1">{{ approvedPersonnages|length }}</h3>
+                            <p class="text-secondary small mb-0">Approuves</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-dark border-secondary">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-x-circle fs-2 text-danger mb-2" aria-hidden="true"></i>
+                            <h3 class="h2 mb-1">{{ rejectedPersonnages|length }}</h3>
+                            <p class="text-secondary small mb-0">Rejetes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Personnages en attente - Cartes #}
+            <div class="mb-5">
+                <h2 class="h4 mb-3">
+                    <i class="bi bi-hourglass-split text-warning me-2" aria-hidden="true"></i>
+                    Personnages en attente ({{ pendingPersonnages|length }})
+                </h2>
+
+                {% if pendingPersonnages is empty %}
+                    <div class="card bg-dark border-secondary">
+                        <div class="card-body text-center py-5">
+                            <i class="bi bi-check-circle display-1 text-secondary" aria-hidden="true"></i>
+                            <h3 class="mt-4 mb-2">Aucun personnage en attente</h3>
+                            <p class="text-secondary">Tous les personnages ont ete moderes.</p>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="row g-3">
+                        {% for personnage in pendingPersonnages %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card bg-dark border-secondary h-100">
+                                    <div class="card-body p-3">
+                                        {# Image #}
+                                        <div class="position-relative mb-3">
+                                            {% if personnage.imageDataUrl %}
+                                                <img src="{{ personnage.imageDataUrl }}"
+                                                     alt="Portrait de {{ personnage.nom }}"
+                                                     class="img-fluid rounded"
+                                                     style="width: 100%; height: 250px; object-fit: cover;">
+                                            {% else %}
+                                                <div class="bg-secondary rounded d-flex align-items-center justify-content-center" style="height: 250px;">
+                                                    <i class="bi bi-person-bounding-box display-3 text-muted" aria-hidden="true"></i>
+                                                </div>
+                                            {% endif %}
+                                            <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-2">En attente</span>
+                                            <span class="badge bg-{{ personnage.partage ? 'info' : 'secondary' }} position-absolute top-0 start-0 m-2">
+                                                <i class="bi bi-{{ personnage.partage ? 'globe' : 'lock' }} me-1" aria-hidden="true"></i>
+                                                {{ personnage.partage ? 'Partagé' : 'Privé' }}
+                                            </span>
+                                        </div>
+
+                                        {# Informations #}
+                                        <h3 class="h5 mb-2">
+                                            <a href="{{ path('app_employe_personnage_show', {id: personnage.id}) }}" class="text-decoration-none text-light">
+                                                {{ personnage.nom }}
+                                            </a>
+                                        </h3>
+                                        <p class="text-secondary small mb-1">
+                                            <i class="bi bi-person me-1" aria-hidden="true"></i>
+                                            Genre : {{ personnage.genre }}
+                                        </p>
+                                        <p class="text-secondary small mb-1">
+                                            <i class="bi bi-person-circle me-1" aria-hidden="true"></i>
+                                            Createur : {{ personnage.utilisateur.pseudo }}
+                                        </p>
+                                        <p class="text-secondary small mb-3">
+                                            <i class="bi bi-calendar me-1" aria-hidden="true"></i>
+                                            {{ personnage.createdAt|date('d/m/Y H:i') }}
+                                        </p>
+
+                                        {# Actions #}
+                                        <div class="d-flex gap-2">
+                                            <form method="post" action="{{ path('app_employe_personnage_approve', {id: personnage.id}) }}" class="flex-fill">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('approve-personnage-' ~ personnage.id) }}">
+                                                <button type="submit" class="btn btn-success btn-sm w-100">
+                                                    <i class="bi bi-check-circle me-1" aria-hidden="true"></i> Approuver
+                                                </button>
+                                            </form>
+                                            <button type="button" class="btn btn-danger btn-sm flex-fill"
+                                                    data-bs-toggle="modal" data-bs-target="#rejectPersonnageModal{{ personnage.id }}">
+                                                <i class="bi bi-x-circle me-1" aria-hidden="true"></i> Rejeter
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {# Modal de rejet #}
+                            <div class="modal fade" id="rejectPersonnageModal{{ personnage.id }}" tabindex="-1"
+                                 aria-labelledby="rejectPersonnageModalLabel{{ personnage.id }}" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content bg-dark border-danger">
+                                        <div class="modal-header border-danger">
+                                            <h5 class="modal-title" id="rejectPersonnageModalLabel{{ personnage.id }}">
+                                                <i class="bi bi-x-circle text-danger me-2" aria-hidden="true"></i>
+                                                Rejeter le personnage
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                                        </div>
+                                        <form method="post" action="{{ path('app_employe_personnage_reject', {id: personnage.id}) }}">
+                                            <div class="modal-body">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('reject-personnage-' ~ personnage.id) }}">
+                                                <p>Voulez-vous vraiment rejeter le personnage <strong class="text-danger">{{ personnage.nom }}</strong> ?</p>
+                                                <div class="mb-3">
+                                                    <label for="reason{{ personnage.id }}" class="form-label">Raison du rejet <span class="text-danger">*</span></label>
+                                                    <textarea class="form-control" id="reason{{ personnage.id }}" name="reason" rows="3" required
+                                                              placeholder="Indiquez la raison du rejet..."></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer border-secondary">
+                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+                                                <button type="submit" class="btn btn-danger">
+                                                    <i class="bi bi-x-circle me-1" aria-hidden="true"></i> Confirmer le rejet
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            {# Personnages approuves - Tableau #}
+            {% if approvedPersonnages is not empty %}
+                <div class="mb-4">
+                    <h2 class="h5 mb-3">
+                        <i class="bi bi-check-circle text-success me-2" aria-hidden="true"></i>
+                        Personnages approuves ({{ approvedPersonnages|length }})
+                    </h2>
+                    <div class="card bg-dark border-secondary">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Nom</th>
+                                            <th>Createur</th>
+                                            <th>Genre</th>
+                                            <th>Date</th>
+                                            <th class="text-end">Detail</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for personnage in approvedPersonnages %}
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        {% if personnage.imageDataUrl %}
+                                                            <img src="{{ personnage.imageDataUrl }}" alt="{{ personnage.nom }}"
+                                                                 class="rounded" style="width: 40px; height: 40px; object-fit: cover;">
+                                                        {% else %}
+                                                            <div class="bg-secondary rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                                <i class="bi bi-person" aria-hidden="true"></i>
+                                                            </div>
+                                                        {% endif %}
+                                                        <strong>{{ personnage.nom }}</strong>
+                                                    </div>
+                                                </td>
+                                                <td class="text-secondary">{{ personnage.utilisateur.pseudo }}</td>
+                                                <td class="text-secondary">{{ personnage.genre }}</td>
+                                                <td class="text-secondary small">{{ personnage.createdAt|date('d/m/Y') }}</td>
+                                                <td class="text-end">
+                                                    <a href="{{ path('app_employe_personnage_show', {id: personnage.id}) }}"
+                                                       class="btn btn-outline-primary btn-sm">
+                                                        <i class="bi bi-eye me-1" aria-hidden="true"></i> Voir
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {# Personnages rejetes - Tableau #}
+            {% if rejectedPersonnages is not empty %}
+                <div class="mb-4">
+                    <h2 class="h5 mb-3">
+                        <i class="bi bi-x-circle text-danger me-2" aria-hidden="true"></i>
+                        Personnages rejetes ({{ rejectedPersonnages|length }})
+                    </h2>
+                    <div class="card bg-dark border-secondary">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Nom</th>
+                                            <th>Createur</th>
+                                            <th>Genre</th>
+                                            <th>Date</th>
+                                            <th class="text-end">Detail</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for personnage in rejectedPersonnages %}
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        {% if personnage.imageDataUrl %}
+                                                            <img src="{{ personnage.imageDataUrl }}" alt="{{ personnage.nom }}"
+                                                                 class="rounded" style="width: 40px; height: 40px; object-fit: cover;">
+                                                        {% else %}
+                                                            <div class="bg-secondary rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                                <i class="bi bi-person" aria-hidden="true"></i>
+                                                            </div>
+                                                        {% endif %}
+                                                        <strong>{{ personnage.nom }}</strong>
+                                                    </div>
+                                                </td>
+                                                <td class="text-secondary">{{ personnage.utilisateur.pseudo }}</td>
+                                                <td class="text-secondary">{{ personnage.genre }}</td>
+                                                <td class="text-secondary small">{{ personnage.createdAt|date('d/m/Y') }}</td>
+                                                <td class="text-end">
+                                                    <a href="{{ path('app_employe_personnage_show', {id: personnage.id}) }}"
+                                                       class="btn btn-outline-primary btn-sm">
+                                                        <i class="bi bi-eye me-1" aria-hidden="true"></i> Voir
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        {# ================================================================
+           ONGLET AVIS
+        ================================================================ #}
+        <div class="tab-pane fade" id="avis-panel" role="tabpanel" aria-labelledby="avis-tab">
+            {# Statistiques #}
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="card bg-dark border-secondary">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-hourglass-split fs-2 text-warning mb-2" aria-hidden="true"></i>
+                            <h3 class="h2 mb-1">{{ pendingAvis|length }}</h3>
+                            <p class="text-secondary small mb-0">En attente</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card bg-dark border-secondary">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-check-circle fs-2 text-success mb-2" aria-hidden="true"></i>
+                            <h3 class="h2 mb-1">{{ approvedAvis|length }}</h3>
+                            <p class="text-secondary small mb-0">Approuves</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Avis en attente - Tableau #}
+            <div class="mb-5">
+                <h2 class="h4 mb-3">
+                    <i class="bi bi-hourglass-split text-warning me-2" aria-hidden="true"></i>
+                    Avis en attente ({{ pendingAvis|length }})
+                </h2>
+
+                {% if pendingAvis is empty %}
+                    <div class="card bg-dark border-secondary">
+                        <div class="card-body text-center py-5">
+                            <i class="bi bi-check-circle display-1 text-secondary" aria-hidden="true"></i>
+                            <h3 class="mt-4 mb-2">Aucun avis en attente</h3>
+                            <p class="text-secondary">Tous les avis ont ete moderes.</p>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="card bg-dark border-secondary">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Personnage</th>
+                                            <th>Auteur</th>
+                                            <th>Note</th>
+                                            <th>Commentaire</th>
+                                            <th>Date</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for avis in pendingAvis %}
+                                            <tr>
+                                                <td>
+                                                    <strong>{{ avis.personnage.nom }}</strong>
+                                                </td>
+                                                <td class="text-secondary">{{ avis.auteur.pseudo }}</td>
+                                                <td>
+                                                    {% for i in 1..5 %}
+                                                        <i class="bi bi-star{% if i <= avis.note %}-fill{% endif %} text-warning" aria-hidden="true"></i>
+                                                    {% endfor %}
+                                                </td>
+                                                <td>
+                                                    <span class="text-secondary">{{ avis.commentaire|length > 80 ? avis.commentaire|slice(0, 80) ~ '...' : avis.commentaire }}</span>
+                                                </td>
+                                                <td class="text-secondary small">{{ avis.dateCommentaire|date('d/m/Y') }}</td>
+                                                <td class="text-end">
+                                                    <div class="d-flex gap-1 justify-content-end">
+                                                        <form method="post" action="{{ path('app_employe_avis_approve', {id: avis.id}) }}">
+                                                            <input type="hidden" name="_token" value="{{ csrf_token('approve-avis-' ~ avis.id) }}">
+                                                            <button type="submit" class="btn btn-success btn-sm" title="Approuver">
+                                                                <i class="bi bi-check-circle" aria-hidden="true"></i>
+                                                            </button>
+                                                        </form>
+                                                        <form method="post" action="{{ path('app_employe_avis_reject', {id: avis.id}) }}">
+                                                            <input type="hidden" name="_token" value="{{ csrf_token('reject-avis-' ~ avis.id) }}">
+                                                            <button type="submit" class="btn btn-danger btn-sm" title="Rejeter">
+                                                                <i class="bi bi-x-circle" aria-hidden="true"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            {# Avis approuves - Tableau #}
+            {% if approvedAvis is not empty %}
+                <div class="mb-4">
+                    <h2 class="h5 mb-3">
+                        <i class="bi bi-check-circle text-success me-2" aria-hidden="true"></i>
+                        Avis approuves ({{ approvedAvis|length }})
+                    </h2>
+                    <div class="card bg-dark border-secondary">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Personnage</th>
+                                            <th>Auteur</th>
+                                            <th>Note</th>
+                                            <th>Commentaire</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for avis in approvedAvis %}
+                                            <tr>
+                                                <td><strong>{{ avis.personnage.nom }}</strong></td>
+                                                <td class="text-secondary">{{ avis.auteur.pseudo }}</td>
+                                                <td>
+                                                    {% for i in 1..5 %}
+                                                        <i class="bi bi-star{% if i <= avis.note %}-fill{% endif %} text-warning" aria-hidden="true"></i>
+                                                    {% endfor %}
+                                                </td>
+                                                <td>
+                                                    <span class="text-secondary">{{ avis.commentaire|length > 80 ? avis.commentaire|slice(0, 80) ~ '...' : avis.commentaire }}</span>
+                                                </td>
+                                                <td class="text-secondary small">{{ avis.dateCommentaire|date('d/m/Y') }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        {# ================================================================
+           ONGLET UTILISATEURS
+        ================================================================ #}
+        <div class="tab-pane fade" id="utilisateurs-panel" role="tabpanel" aria-labelledby="utilisateurs-tab">
+            {# Statistiques #}
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="card bg-success bg-opacity-10 border-success">
+                        <div class="card-body text-center">
+                            <i class="bi bi-check-circle fs-2 text-success mb-2" aria-hidden="true"></i>
+                            <h3 class="h5 mb-0">{{ activeUsers|length }}</h3>
+                            <p class="text-secondary small mb-0">Utilisateurs actifs</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card bg-warning bg-opacity-10 border-warning">
+                        <div class="card-body text-center">
+                            <i class="bi bi-pause-circle fs-2 text-warning mb-2" aria-hidden="true"></i>
+                            <h3 class="h5 mb-0">{{ suspendedUsers|length }}</h3>
+                            <p class="text-secondary small mb-0">Utilisateurs suspendus</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Utilisateurs actifs #}
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-header bg-transparent border-bottom border-secondary">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-check-circle text-success" aria-hidden="true"></i>
+                        <h3 class="h5 mb-0">Utilisateurs actifs ({{ activeUsers|length }})</h3>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    {% if activeUsers is empty %}
+                        <div class="text-center py-5 text-secondary">
+                            <i class="bi bi-inbox display-4" aria-hidden="true"></i>
+                            <p class="mt-3 mb-0">Aucun utilisateur actif</p>
+                        </div>
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Pseudo</th>
+                                        <th>Email</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in activeUsers %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <i class="bi bi-person-circle text-primary" aria-hidden="true"></i>
+                                                    <strong>{{ user.pseudo }}</strong>
+                                                </div>
+                                            </td>
+                                            <td class="text-secondary">{{ user.email }}</td>
+                                            <td class="text-end">
+                                                <div class="d-flex gap-1 justify-content-end">
+                                                    {# Suspendre #}
+                                                    <button type="button" class="btn btn-warning btn-sm"
+                                                            data-bs-toggle="modal" data-bs-target="#suspendModal{{ user.id }}"
+                                                            title="Suspendre">
+                                                        <i class="bi bi-pause-circle" aria-hidden="true"></i>
+                                                    </button>
+                                                    {# Supprimer #}
+                                                    <button type="button" class="btn btn-danger btn-sm"
+                                                            data-bs-toggle="modal" data-bs-target="#deleteUserModal{{ user.id }}"
+                                                            title="Supprimer">
+                                                        <i class="bi bi-trash" aria-hidden="true"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {# Modals utilisateurs actifs #}
+            {% for user in activeUsers %}
+                {# Modal Suspendre #}
+                <div class="modal fade" id="suspendModal{{ user.id }}" tabindex="-1"
+                     aria-labelledby="suspendModalLabel{{ user.id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content bg-dark border-warning">
+                            <div class="modal-header border-warning">
+                                <h5 class="modal-title" id="suspendModalLabel{{ user.id }}">
+                                    <i class="bi bi-pause-circle text-warning me-2" aria-hidden="true"></i>
+                                    Suspendre l'utilisateur
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Etes-vous sur de vouloir suspendre l'utilisateur <strong class="text-warning">{{ user.pseudo }}</strong> ?</p>
+                                <p class="text-secondary small mb-0">
+                                    <i class="bi bi-info-circle me-1" aria-hidden="true"></i>
+                                    L'utilisateur ne pourra plus se connecter tant qu'il sera suspendu.
+                                </p>
+                            </div>
+                            <div class="modal-footer border-secondary">
+                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+                                <form method="post" action="{{ path('app_employe_user_suspend', {id: user.id}) }}" class="d-inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('suspend' ~ user.id) }}">
+                                    <button type="submit" class="btn btn-warning">
+                                        <i class="bi bi-pause-circle me-1" aria-hidden="true"></i> Suspendre
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# Modal Supprimer #}
+                <div class="modal fade" id="deleteUserModal{{ user.id }}" tabindex="-1"
+                     aria-labelledby="deleteUserModalLabel{{ user.id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content bg-dark border-danger">
+                            <div class="modal-header border-danger">
+                                <h5 class="modal-title" id="deleteUserModalLabel{{ user.id }}">
+                                    <i class="bi bi-trash text-danger me-2" aria-hidden="true"></i>
+                                    Supprimer l'utilisateur
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="alert alert-danger d-flex align-items-start gap-2" role="alert">
+                                    <i class="bi bi-exclamation-triangle-fill mt-1" aria-hidden="true"></i>
+                                    <strong>Action irreversible !</strong>
+                                </div>
+                                <p>Etes-vous sur de vouloir supprimer definitivement l'utilisateur <strong class="text-danger">{{ user.pseudo }}</strong> ?</p>
+                                <p class="text-secondary small mb-0">
+                                    <i class="bi bi-info-circle me-1" aria-hidden="true"></i>
+                                    Toutes ses donnees seront supprimees de maniere permanente.
+                                </p>
+                            </div>
+                            <div class="modal-footer border-secondary">
+                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+                                <form method="post" action="{{ path('app_employe_user_delete', {id: user.id}) }}" class="d-inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="bi bi-trash me-1" aria-hidden="true"></i> Supprimer definitivement
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+            {# Utilisateurs suspendus #}
+            <div class="card bg-dark border-secondary">
+                <div class="card-header bg-transparent border-bottom border-secondary">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-pause-circle text-warning" aria-hidden="true"></i>
+                        <h3 class="h5 mb-0">Utilisateurs suspendus ({{ suspendedUsers|length }})</h3>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    {% if suspendedUsers is empty %}
+                        <div class="text-center py-5 text-secondary">
+                            <i class="bi bi-inbox display-4" aria-hidden="true"></i>
+                            <p class="mt-3 mb-0">Aucun utilisateur suspendu</p>
+                        </div>
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Pseudo</th>
+                                        <th>Email</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in suspendedUsers %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <i class="bi bi-person-circle text-warning" aria-hidden="true"></i>
+                                                    <strong>{{ user.pseudo }}</strong>
+                                                    <span class="badge bg-warning text-dark">
+                                                        <i class="bi bi-pause-circle me-1" aria-hidden="true"></i>Suspendu
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td class="text-secondary">{{ user.email }}</td>
+                                            <td class="text-end">
+                                                <div class="d-flex gap-1 justify-content-end">
+                                                    {# Reactiver #}
+                                                    <form method="post" action="{{ path('app_employe_user_unsuspend', {id: user.id}) }}" class="d-inline">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('unsuspend' ~ user.id) }}">
+                                                        <button type="submit" class="btn btn-success btn-sm" title="Reactiver">
+                                                            <i class="bi bi-play-circle me-1" aria-hidden="true"></i> Reactiver
+                                                        </button>
+                                                    </form>
+                                                    {# Supprimer #}
+                                                    <button type="button" class="btn btn-danger btn-sm"
+                                                            data-bs-toggle="modal" data-bs-target="#deleteSuspendedModal{{ user.id }}"
+                                                            title="Supprimer">
+                                                        <i class="bi bi-trash" aria-hidden="true"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {# Modals utilisateurs suspendus #}
+            {% for user in suspendedUsers %}
+                <div class="modal fade" id="deleteSuspendedModal{{ user.id }}" tabindex="-1"
+                     aria-labelledby="deleteSuspendedModalLabel{{ user.id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content bg-dark border-danger">
+                            <div class="modal-header border-danger">
+                                <h5 class="modal-title" id="deleteSuspendedModalLabel{{ user.id }}">
+                                    <i class="bi bi-trash text-danger me-2" aria-hidden="true"></i>
+                                    Supprimer l'utilisateur
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="alert alert-danger d-flex align-items-start gap-2" role="alert">
+                                    <i class="bi bi-exclamation-triangle-fill mt-1" aria-hidden="true"></i>
+                                    <strong>Action irreversible !</strong>
+                                </div>
+                                <p>Etes-vous sur de vouloir supprimer definitivement l'utilisateur <strong class="text-danger">{{ user.pseudo }}</strong> ?</p>
+                                <p class="text-secondary small mb-0">
+                                    <i class="bi bi-info-circle me-1" aria-hidden="true"></i>
+                                    Toutes ses donnees seront supprimees de maniere permanente.
+                                </p>
+                            </div>
+                            <div class="modal-footer border-secondary">
+                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+                                <form method="post" action="{{ path('app_employe_user_delete', {id: user.id}) }}" class="d-inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="bi bi-trash me-1" aria-hidden="true"></i> Supprimer definitivement
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        {# ================================================================
+           ONGLET ARTICLES
+        ================================================================ #}
+        <div class="tab-pane fade" id="articles-panel" role="tabpanel" aria-labelledby="articles-tab">
+            {# Statistiques #}
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="card bg-dark border-secondary">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-bag fs-2 text-primary mb-2" aria-hidden="true"></i>
+                            <h3 class="h2 mb-1">{{ totalArticles }}</h3>
+                            <p class="text-secondary small mb-0">Total d'articles</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card bg-dark border-secondary">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-check-circle fs-2 text-success mb-2" aria-hidden="true"></i>
+                            <h3 class="h2 mb-1">{{ activeArticles }}</h3>
+                            <p class="text-secondary small mb-0">Articles actifs</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Liens de gestion #}
+            <div class="card bg-dark border-secondary">
+                <div class="card-body p-4 text-center">
+                    <i class="bi bi-bag-check display-4 text-secondary mb-3" aria-hidden="true"></i>
+                    <h3 class="h5 mb-3">Gestion du catalogue d'articles</h3>
+                    <p class="text-secondary mb-4">
+                        Gerez les vetements, armures, accessoires et armes disponibles pour les personnages.
+                    </p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{{ path('app_employe_articles') }}" class="btn btn-primary d-flex align-items-center gap-2">
+                            <i class="bi bi-list-ul" aria-hidden="true"></i>
+                            Voir tous les articles
+                        </a>
+                        <a href="{{ path('app_employe_article_create') }}" class="btn btn-success d-flex align-items-center gap-2">
+                            <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                            Creer un article
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

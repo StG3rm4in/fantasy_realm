@@ -1,0 +1,85 @@
+{# Header / Navigation #}
+<header class="sticky-top">
+    <a href="#main-content" class="visually-hidden-focusable">Aller au contenu principal</a>
+    <nav class="navbar navbar-expand-lg navbar-fantasy" aria-label="Navigation principale">
+        <div class="container">
+            {# Logo #}
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{{ path('app_home') }}" aria-label="PixelVerse Studios - Accueil">
+                <i class="bi bi-lightning-charge-fill fs-4" aria-hidden="true"></i>
+                <span class="d-none d-sm-inline">PixelVerse Studios</span>
+                <span class="d-sm-none">PVS</span>
+            </a>
+
+            {# Mobile Toggle #}
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Ouvrir le menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            {# Navigation #}
+            <div class="collapse navbar-collapse" id="navbarNav">
+                {# Main Nav Links #}
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link {% if app.request.attributes.get('_route') == 'app_home' %}active text-primary{% endif %}" href="{{ path('app_home') }}">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if app.request.attributes.get('_route') starts with 'app_personnage' %}active text-primary{% endif %}" href="{{ path('app_personnages') }}">Personnages</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if app.request.attributes.get('_route') == 'app_contact' %}active text-primary{% endif %}" href="{{ path('app_contact') }}">Contact</a>
+                    </li>
+                </ul>
+
+                {# Auth Section #}
+                <div class="d-flex align-items-center gap-2">
+                    {% if app.user %}
+                        {# User Dropdown #}
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center gap-2"
+                                    type="button"
+                                    id="userDropdown"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                <i class="bi bi-person-circle" aria-hidden="true"></i>
+                                <span>{{ app.user.pseudo ?? 'Mon espace' }}</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="userDropdown">
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center gap-2" href="{{ path('app_espace_utilisateur') }}">
+                                        <i class="bi bi-controller" aria-hidden="true"></i>
+                                        Mon espace
+                                    </a>
+                                </li>
+                                {% if is_granted('ROLE_EMPLOYEE') %}
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center gap-2" href="{{ path('app_espace_employe') }}">
+                                            <i class="bi bi-shield-check" aria-hidden="true"></i>
+                                            Espace employé
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center gap-2" href="{{ path('app_espace_admin') }}">
+                                            <i class="bi bi-gear-fill" aria-hidden="true"></i>
+                                            Administration
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger d-flex align-items-center gap-2" href="{{ path('app_logout') }}">
+                                        <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                                        Déconnexion
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <a href="{{ path('app_login') }}" class="btn btn-outline-light">Connexion</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>

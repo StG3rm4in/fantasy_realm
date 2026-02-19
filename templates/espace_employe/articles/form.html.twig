@@ -1,0 +1,111 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ isEdit ? 'Modifier' : 'Creer' }} un article - FantasyRealm Online{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    {# En-tete #}
+    <div class="mb-4">
+        <a href="{{ path('app_employe_articles') }}" class="btn btn-outline-light btn-sm d-flex align-items-center gap-2 d-inline-flex">
+            <i class="bi bi-arrow-left" aria-hidden="true"></i>
+            Retour aux articles
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card bg-dark border-secondary">
+                <div class="card-header bg-transparent border-bottom border-secondary">
+                    <h1 class="h4 mb-0">
+                        {% if isEdit %}
+                            <i class="bi bi-pencil text-primary me-2" aria-hidden="true"></i>
+                            Modifier l'article
+                        {% else %}
+                            <i class="bi bi-plus-lg text-success me-2" aria-hidden="true"></i>
+                            Creer un article
+                        {% endif %}
+                    </h1>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post"
+                          action="{{ isEdit ? path('app_employe_article_edit', {id: article.id}) : path('app_employe_article_create') }}"
+                          enctype="multipart/form-data">
+
+                        {# CSRF Token #}
+                        {% if isEdit %}
+                            <input type="hidden" name="_token" value="{{ csrf_token('article-edit-' ~ article.id) }}">
+                        {% else %}
+                            <input type="hidden" name="_token" value="{{ csrf_token('article-create') }}">
+                        {% endif %}
+
+                        {# Nom #}
+                        <div class="mb-4">
+                            <label for="nom" class="form-label">
+                                <i class="bi bi-type me-1" aria-hidden="true"></i>
+                                Nom de l'article <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="nom" name="nom"
+                                   value="{{ nom ?? '' }}" required
+                                   placeholder="Nom de l'article...">
+                        </div>
+
+                        {# Type #}
+                        <div class="mb-4">
+                            <label for="type" class="form-label">
+                                <i class="bi bi-tag me-1" aria-hidden="true"></i>
+                                Type <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select" id="type" name="type" required>
+                                <option value="" disabled {{ (type ?? '') == '' ? 'selected' : '' }}>Selectionnez un type</option>
+                                <option value="vetement" {{ (type ?? '') == 'vetement' ? 'selected' : '' }}>Vetement</option>
+                                <option value="armure" {{ (type ?? '') == 'armure' ? 'selected' : '' }}>Armure</option>
+                                <option value="accessoire" {{ (type ?? '') == 'accessoire' ? 'selected' : '' }}>Accessoire</option>
+                                <option value="arme" {{ (type ?? '') == 'arme' ? 'selected' : '' }}>Arme</option>
+                            </select>
+                        </div>
+
+                        {# Image #}
+                        <div class="mb-4">
+                            <label for="image" class="form-label">
+                                <i class="bi bi-image me-1" aria-hidden="true"></i>
+                                Image {% if not isEdit %}<span class="text-danger">*</span>{% endif %}
+                            </label>
+                            <input type="file" class="form-control" id="image" name="image"
+                                   accept="image/*" {{ not isEdit ? 'required' : '' }}>
+                            {% if isEdit %}
+                                <div class="form-text text-secondary">
+                                    <i class="bi bi-info-circle me-1" aria-hidden="true"></i>
+                                    Laissez vide pour conserver l'image actuelle.
+                                </div>
+                                {% if article.imageDataUrl %}
+                                    <div class="mt-2">
+                                        <p class="text-secondary small mb-1">Image actuelle :</p>
+                                        <img src="{{ article.imageDataUrl }}" alt="{{ article.nom }}"
+                                             class="rounded" style="max-width: 150px; max-height: 150px; object-fit: cover;">
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+
+                        {# Boutons #}
+                        <div class="d-flex gap-2 justify-content-end pt-3 border-top border-secondary">
+                            <a href="{{ path('app_employe_articles') }}" class="btn btn-outline-secondary">
+                                Annuler
+                            </a>
+                            <button type="submit" class="btn {{ isEdit ? 'btn-primary' : 'btn-success' }}">
+                                {% if isEdit %}
+                                    <i class="bi bi-check-lg me-1" aria-hidden="true"></i>
+                                    Enregistrer les modifications
+                                {% else %}
+                                    <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>
+                                    Creer l'article
+                                {% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

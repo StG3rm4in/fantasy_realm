@@ -1,0 +1,283 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ personnage.nom }} - FantasyRealm Online{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    {# Back link #}
+    <div class="mb-4">
+        <a href="{{ path('app_personnages') }}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>
+            Retour à la galerie
+        </a>
+    </div>
+
+    <div class="row g-4">
+        {# Character Image #}
+        <div class="col-lg-5">
+            <div class="card bg-dark border-secondary">
+                {% if personnage.imageDataUrl %}
+                    <img src="{{ personnage.imageDataUrl }}"
+                         class="card-img-top"
+                         alt="Portrait de {{ personnage.nom }}"
+                         style="max-height: 500px; object-fit: cover;">
+                {% else %}
+                    <div class="card-img-top d-flex align-items-center justify-content-center bg-secondary" style="height: 400px;">
+                        <i class="bi bi-person-bounding-box display-1 text-muted" aria-hidden="true"></i>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Character Details #}
+        <div class="col-lg-7">
+            <div class="card bg-dark border-secondary">
+                <div class="card-header bg-transparent border-bottom border-secondary">
+                    <h1 class="h3 mb-0 d-flex align-items-center gap-2">
+                        <i class="bi bi-person-badge text-primary" aria-hidden="true"></i>
+                        {{ personnage.nom }}
+                    </h1>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="bi bi-gender-ambiguous text-primary" aria-hidden="true"></i>
+                                <span class="text-secondary small">Genre</span>
+                            </div>
+                            <p class="mb-0 fw-medium">{{ personnage.genre }}</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="bi bi-palette text-primary" aria-hidden="true"></i>
+                                <span class="text-secondary small">Couleur de peau</span>
+                            </div>
+                            <p class="mb-0 fw-medium">{{ personnage.couleurPeau }}</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="bi bi-eye text-primary" aria-hidden="true"></i>
+                                <span class="text-secondary small">Couleur des yeux</span>
+                            </div>
+                            <p class="mb-0 fw-medium">{{ personnage.couleurYeux }}</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="bi bi-scissors text-primary" aria-hidden="true"></i>
+                                <span class="text-secondary small">Couleur des cheveux</span>
+                            </div>
+                            <p class="mb-0 fw-medium">{{ personnage.couleurCheveux }}</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="bi bi-eye text-primary" aria-hidden="true"></i>
+                                <span class="text-secondary small">Forme des yeux</span>
+                            </div>
+                            <p class="mb-0 fw-medium">{{ personnage.formeYeux }}</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="bi bi-circle text-primary" aria-hidden="true"></i>
+                                <span class="text-secondary small">Forme du nez</span>
+                            </div>
+                            <p class="mb-0 fw-medium">{{ personnage.formeNez }}</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="bi bi-chat-square text-primary" aria-hidden="true"></i>
+                                <span class="text-secondary small">Forme de la bouche</span>
+                            </div>
+                            <p class="mb-0 fw-medium">{{ personnage.formeBouche }}</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="bi bi-person-circle text-primary" aria-hidden="true"></i>
+                                <span class="text-secondary small">Créateur</span>
+                            </div>
+                            <p class="mb-0 fw-medium">{{ personnage.utilisateur.pseudo }}</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="bi bi-calendar3 text-primary" aria-hidden="true"></i>
+                                <span class="text-secondary small">Date de création</span>
+                            </div>
+                            <p class="mb-0 fw-medium">{{ personnage.dateCreation|date('d/m/Y à H:i') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Equipped Articles #}
+            {% if personnage.articles|length > 0 %}
+                <div class="card bg-dark border-secondary mt-4">
+                    <div class="card-header bg-transparent border-bottom border-secondary">
+                        <h2 class="h5 mb-0 d-flex align-items-center gap-2">
+                            <i class="bi bi-bag text-primary" aria-hidden="true"></i>
+                            Equipement
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row row-cols-2 row-cols-md-3 g-3">
+                            {% for article in personnage.articles %}
+                                {% if article.actif %}
+                                    <div class="col">
+                                        <div class="border border-secondary rounded p-2 text-center h-100">
+                                            {% if article.imageDataUrl %}
+                                                <img src="{{ article.imageDataUrl }}"
+                                                     alt="{{ article.nom }}"
+                                                     class="img-fluid rounded mb-2"
+                                                     style="max-height: 80px; object-fit: contain;">
+                                            {% else %}
+                                                <div class="d-flex align-items-center justify-content-center mb-2" style="height: 80px;">
+                                                    <i class="bi bi-box-seam text-muted fs-3" aria-hidden="true"></i>
+                                                </div>
+                                            {% endif %}
+                                            <p class="small mb-0 text-light">{{ article.nom }}</p>
+                                            <span class="badge bg-secondary mt-1">{{ article.type }}</span>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {# Comments Section #}
+    <div class="row mt-5">
+        <div class="col-lg-8 mx-auto">
+            <h2 class="h4 mb-4 d-flex align-items-center gap-2">
+                <i class="bi bi-chat-dots text-primary" aria-hidden="true"></i>
+                Avis de la communauté
+                <span class="badge bg-secondary">{{ commentaires|length }}</span>
+            </h2>
+
+            {# Existing user review #}
+            {% if userCommentaire %}
+                <div class="card bg-dark border-primary mb-4">
+                    <div class="card-header bg-transparent border-bottom border-primary d-flex justify-content-between align-items-center">
+                        <span class="small text-primary">
+                            <i class="bi bi-pencil-square me-1" aria-hidden="true"></i>
+                            Votre avis
+                        </span>
+                        <div class="d-flex gap-2">
+                            <a href="{{ path('app_avis_edit', { id: userCommentaire.id }) }}" class="btn btn-outline-primary btn-sm" aria-label="Modifier votre avis">
+                                <i class="bi bi-pencil" aria-hidden="true"></i>
+                            </a>
+                            <form method="post" action="{{ path('app_avis_delete', { id: userCommentaire.id }) }}" class="d-inline"
+                                  onsubmit="return confirm('Voulez-vous vraiment supprimer votre avis ?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete-avis-' ~ userCommentaire.id) }}">
+                                <button type="submit" class="btn btn-outline-danger btn-sm" aria-label="Supprimer votre avis">
+                                    <i class="bi bi-trash" aria-hidden="true"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex align-items-center gap-1 mb-2" aria-label="Note : {{ userCommentaire.note }} sur 5">
+                            {% for i in 1..5 %}
+                                <i class="bi bi-star{{ i <= userCommentaire.note ? '-fill text-warning' : ' text-secondary' }}" aria-hidden="true"></i>
+                            {% endfor %}
+                        </div>
+                        <p class="mb-1">{{ userCommentaire.commentaire }}</p>
+                        <small class="text-secondary">
+                            Publié le {{ userCommentaire.dateCommentaire|date('d/m/Y à H:i') }}
+                            {% if userCommentaire.enAttente %}
+                                <span class="badge bg-warning text-dark ms-2">En attente de modération</span>
+                            {% elseif userCommentaire.refuse %}
+                                <span class="badge bg-danger ms-2">Refusé</span>
+                            {% endif %}
+                        </small>
+                    </div>
+                </div>
+            {% endif %}
+
+            {# Comment Form #}
+            {% if commentaireForm is defined and commentaireForm is not null %}
+                <div class="card bg-dark border-secondary mb-4">
+                    <div class="card-header bg-transparent border-bottom border-secondary">
+                        <h3 class="h6 mb-0 d-flex align-items-center gap-2">
+                            <i class="bi bi-star text-primary" aria-hidden="true"></i>
+                            Laisser un avis
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        {{ form_start(commentaireForm) }}
+                            <div class="mb-3">
+                                <label class="form-label">Note</label>
+                                <div class="star-rating d-flex gap-1" role="radiogroup" aria-label="Sélectionner une note de 1 à 5 étoiles">
+                                    {% for i in 1..5 %}
+                                        <i class="bi bi-star fs-4 star-icon"
+                                           data-value="{{ i }}"
+                                           role="radio"
+                                           aria-checked="false"
+                                           aria-label="{{ i }} étoile{{ i > 1 ? 's' : '' }}"
+                                           tabindex="0"
+                                           style="cursor: pointer;"></i>
+                                    {% endfor %}
+                                </div>
+                                <div class="d-none">
+                                    {{ form_widget(commentaireForm.note, { 'attr': { 'id': 'star-rating-input' } }) }}
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form_label(commentaireForm.commentaire, 'Votre commentaire', { 'label_attr': { 'class': 'form-label' } }) }}
+                                {{ form_widget(commentaireForm.commentaire, { 'attr': { 'class': 'form-control', 'rows': '4', 'placeholder': 'Partagez votre avis sur ce personnage...' } }) }}
+                                {{ form_errors(commentaireForm.commentaire) }}
+                            </div>
+
+                            <button type="submit" class="btn btn-primary d-flex align-items-center gap-2">
+                                <i class="bi bi-send" aria-hidden="true"></i>
+                                Publier l'avis
+                            </button>
+                        {{ form_end(commentaireForm) }}
+                    </div>
+                </div>
+            {% elseif not app.user %}
+                <div class="alert alert-info d-flex align-items-center gap-2" role="alert">
+                    <i class="bi bi-info-circle" aria-hidden="true"></i>
+                    <a href="{{ path('app_login') }}" class="alert-link">Connectez-vous</a> pour laisser un avis.
+                </div>
+            {% endif %}
+
+            {# Approved Comments List #}
+            {% if commentaires|length > 0 %}
+                <div class="d-flex flex-column gap-3">
+                    {% for commentaire in commentaires %}
+                        <div class="card bg-dark border-secondary">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <span class="fw-semibold text-light">
+                                            <i class="bi bi-person-circle text-primary me-1" aria-hidden="true"></i>
+                                            {{ commentaire.auteur.pseudo }}
+                                        </span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-1" aria-label="Note : {{ commentaire.note }} sur 5">
+                                        {% for i in 1..5 %}
+                                            <i class="bi bi-star{{ i <= commentaire.note ? '-fill text-warning' : ' text-secondary' }} small" aria-hidden="true"></i>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <p class="mb-1">{{ commentaire.commentaire }}</p>
+                                <small class="text-secondary">
+                                    <i class="bi bi-calendar3 me-1" aria-hidden="true"></i>
+                                    {{ commentaire.dateCommentaire|date('d/m/Y à H:i') }}
+                                </small>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-4">
+                    <i class="bi bi-chat-left-text display-4 text-secondary" aria-hidden="true"></i>
+                    <p class="text-secondary mt-2 mb-0">Aucun avis pour le moment. Soyez le premier à donner votre avis !</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

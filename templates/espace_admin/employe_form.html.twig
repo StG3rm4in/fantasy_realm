@@ -1,0 +1,105 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ isEdit ? 'Modifier' : 'Créer' }} un employé - FantasyRealm Online{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+
+            <h1 class="mb-4">
+                <i class="bi bi-{{ isEdit ? 'pencil-square' : 'person-plus' }}" aria-hidden="true"></i>
+                {{ isEdit ? 'Modifier' : 'Créer' }} un employé
+            </h1>
+
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {# Jeton CSRF #}
+                        <input type="hidden" name="_token"
+                               value="{{ csrf_token(isEdit ? 'employe-edit-' ~ user.id : 'employe-create') }}">
+
+                        {# Pseudo #}
+                        <div class="mb-3">
+                            <label for="pseudo" class="form-label">
+                                <i class="bi bi-person" aria-hidden="true"></i>
+                                Pseudo
+                            </label>
+                            <input type="text" class="form-control" id="pseudo" name="pseudo"
+                                   value="{{ pseudo }}" required>
+                        </div>
+
+                        {# Email #}
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                <i class="bi bi-envelope" aria-hidden="true"></i>
+                                Email
+                            </label>
+                            <input type="email" class="form-control" id="email" name="email"
+                                   value="{{ email }}" required>
+                        </div>
+
+                        {# Mot de passe #}
+                        <div class="mb-3">
+                            <label for="password" class="form-label">
+                                <i class="bi bi-lock" aria-hidden="true"></i>
+                                Mot de passe
+                            </label>
+                            <input type="password" class="form-control" id="password" name="password"
+                                   {% if not isEdit %}required{% endif %}
+                                   minlength="12" placeholder="Minimum 12 caractères"
+                                   aria-describedby="passwordStrengthHelp">
+                            {% if isEdit %}
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle" aria-hidden="true"></i>
+                                    Laisser vide pour ne pas changer
+                                </div>
+                            {% endif %}
+                            <div id="passwordStrengthHelp" class="form-text">
+                                Minimum 12 caractères avec majuscules, minuscules, chiffres et caractères spéciaux.
+                            </div>
+                            <div class="mt-2">
+                                <div class="progress" role="progressbar" aria-label="Force du mot de passe" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="height: 8px;">
+                                    <div class="progress-bar" id="passwordStrengthBar" style="width: 0%;"></div>
+                                </div>
+                                <small id="passwordStrengthText" class="text-secondary mt-1 d-block"></small>
+                            </div>
+                            <ul class="list-unstyled small mt-2 mb-0" id="passwordCriteria">
+                                <li id="criteria-length" class="text-secondary"><i class="bi bi-x-circle" aria-hidden="true"></i> Minimum 12 caractères</li>
+                                <li id="criteria-uppercase" class="text-secondary"><i class="bi bi-x-circle" aria-hidden="true"></i> Au moins une majuscule</li>
+                                <li id="criteria-lowercase" class="text-secondary"><i class="bi bi-x-circle" aria-hidden="true"></i> Au moins une minuscule</li>
+                                <li id="criteria-digit" class="text-secondary"><i class="bi bi-x-circle" aria-hidden="true"></i> Au moins un chiffre</li>
+                                <li id="criteria-special" class="text-secondary"><i class="bi bi-x-circle" aria-hidden="true"></i> Au moins un caractère spécial</li>
+                            </ul>
+                        </div>
+
+                        {# Confirmation du mot de passe #}
+                        <div class="mb-4">
+                            <label for="confirm_password" class="form-label">
+                                <i class="bi bi-lock-fill" aria-hidden="true"></i>
+                                Confirmer le mot de passe
+                            </label>
+                            <input type="password" class="form-control" id="confirm_password" name="password_confirm"
+                                   {% if not isEdit %}required{% endif %}>
+                            <div id="confirmPasswordFeedback" class="form-text"></div>
+                        </div>
+
+                        {# Boutons #}
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{{ path('app_espace_admin') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                                Retour
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-{{ isEdit ? 'check-lg' : 'plus-lg' }}" aria-hidden="true"></i>
+                                {{ isEdit ? 'Enregistrer les modifications' : 'Créer l\'employé' }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

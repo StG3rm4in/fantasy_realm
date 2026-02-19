@@ -1,0 +1,183 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon espace - FantasyRealm Online{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    {# Header #}
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+        <div>
+            <h1 class="display-6 fw-bold mb-1">
+                <i class="bi bi-controller text-primary" aria-hidden="true"></i>
+                Mon espace
+            </h1>
+            <p class="text-secondary mb-0">
+                Bienvenue, <strong>{{ app.user.pseudo }}</strong>. Gérez vos personnages depuis cet espace.
+            </p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_personnage_create') }}" class="btn btn-primary d-flex align-items-center gap-2">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                Créer un personnage
+            </a>
+            <button type="button" class="btn btn-outline-danger d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                <i class="bi bi-person-x" aria-hidden="true"></i>
+                <span class="d-none d-sm-inline">Supprimer mon compte</span>
+            </button>
+        </div>
+    </div>
+
+    {# Characters Grid #}
+    {% if personnages|length > 0 %}
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+            {% for personnage in personnages %}
+                <div class="col">
+                    <div class="card bg-dark border-secondary h-100">
+                        {# Image #}
+                        {% if personnage.imageDataUrl %}
+                            <img src="{{ personnage.imageDataUrl }}"
+                                 class="card-img-top"
+                                 alt="Portrait de {{ personnage.nom }}"
+                                 style="height: 220px; object-fit: cover;">
+                        {% else %}
+                            <div class="card-img-top d-flex align-items-center justify-content-center bg-secondary" style="height: 220px;">
+                                <i class="bi bi-person-bounding-box display-3 text-muted" aria-hidden="true"></i>
+                            </div>
+                        {% endif %}
+
+                        {# Card Body #}
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h2 class="h6 mb-0 text-light">{{ personnage.nom }}</h2>
+                                {# Status Badge #}
+                                {% if personnage.autorise is null %}
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="bi bi-hourglass-split me-1" aria-hidden="true"></i>
+                                        En attente
+                                    </span>
+                                {% elseif personnage.autorise %}
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-check-circle me-1" aria-hidden="true"></i>
+                                        Approuvé
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-danger">
+                                        <i class="bi bi-x-circle me-1" aria-hidden="true"></i>
+                                        Rejeté
+                                    </span>
+                                {% endif %}
+                            </div>
+                            <p class="small text-secondary mb-2">
+                                {{ personnage.genre }} &middot; Créé le {{ personnage.dateCreation|date('d/m/Y') }}
+                            </p>
+                            {% if personnage.partage %}
+                                <span class="badge bg-info bg-opacity-25 text-info">
+                                    <i class="bi bi-globe me-1" aria-hidden="true"></i>
+                                    Partagé
+                                </span>
+                            {% else %}
+                                <span class="badge bg-secondary bg-opacity-25 text-secondary">
+                                    <i class="bi bi-lock me-1" aria-hidden="true"></i>
+                                    Privé
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        {# Actions #}
+                        <div class="card-footer bg-transparent border-secondary">
+                            <div class="d-flex flex-wrap gap-1">
+                                {% if personnage.autorise %}
+                                    <a href="{{ path('app_personnage_edit', { id: personnage.id }) }}"
+                                       class="btn btn-outline-primary btn-sm"
+                                       aria-label="Modifier {{ personnage.nom }}">
+                                        <i class="bi bi-pencil" aria-hidden="true"></i>
+                                        Modifier
+                                    </a>
+                                {% endif %}
+                                {% if personnage.autorise %}
+                                    <a href="{{ path('app_personnage_accessoires', { id: personnage.id }) }}"
+                                       class="btn btn-outline-info btn-sm"
+                                       aria-label="Gérer l'équipement de {{ personnage.nom }}">
+                                        <i class="bi bi-bag" aria-hidden="true"></i>
+                                        Equipement
+                                    </a>
+                                {% endif %}
+                                <form method="post" action="{{ path('app_personnage_toggle_partage', { id: personnage.id }) }}" class="d-inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('partage_' ~ personnage.id) }}">
+                                    <button type="submit"
+                                            class="btn btn-outline-{{ personnage.partage ? 'secondary' : 'success' }} btn-sm"
+                                            aria-label="{{ personnage.partage ? 'Rendre privé' : 'Partager' }} {{ personnage.nom }}">
+                                        <i class="bi bi-{{ personnage.partage ? 'lock' : 'globe' }}" aria-hidden="true"></i>
+                                        {{ personnage.partage ? 'Rendre privé' : 'Partager' }}
+                                    </button>
+                                </form>
+                                <a href="{{ path('app_personnage_dupliquer', { id: personnage.id }) }}"
+                                   class="btn btn-outline-warning btn-sm"
+                                   aria-label="Dupliquer {{ personnage.nom }}">
+                                    <i class="bi bi-copy" aria-hidden="true"></i>
+                                    Dupliquer
+                                </a>
+                                <form method="post" action="{{ path('app_personnage_delete', { id: personnage.id }) }}" class="d-inline"
+                                      onsubmit="return confirm('Voulez-vous vraiment supprimer le personnage « {{ personnage.nom|e('js') }} » ? Cette action est irréversible.');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete_' ~ personnage.id) }}">
+                                    <button type="submit"
+                                            class="btn btn-outline-danger btn-sm"
+                                            aria-label="Supprimer {{ personnage.nom }}">
+                                        <i class="bi bi-trash" aria-hidden="true"></i>
+                                        Supprimer
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-person-plus display-1 text-secondary" aria-hidden="true"></i>
+            <h2 class="h5 text-secondary mt-3">Aucun personnage créé</h2>
+            <p class="text-secondary">Commencez par créer votre premier héros de légende !</p>
+            <a href="{{ path('app_personnage_create') }}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>
+                Créer un personnage
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+{# Delete Account Modal #}
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark border-danger">
+            <div class="modal-header border-danger">
+                <h2 class="modal-title h5 text-danger" id="deleteAccountModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill me-2" aria-hidden="true"></i>
+                    Supprimer mon compte
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2">Etes-vous sûr de vouloir supprimer votre compte ?</p>
+                <div class="alert alert-danger d-flex align-items-start gap-2 mb-0" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill mt-1" aria-hidden="true"></i>
+                    <div>
+                        <strong>Cette action est irréversible.</strong> Tous vos personnages, commentaires et données
+                        associées seront définitivement supprimés.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+                <form method="post" action="{{ path('app_delete_account') }}" class="d-inline">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete_account') }}">
+                    <button type="submit" class="btn btn-danger d-flex align-items-center gap-2">
+                        <i class="bi bi-person-x" aria-hidden="true"></i>
+                        Confirmer la suppression
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

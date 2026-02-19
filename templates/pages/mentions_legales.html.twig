@@ -1,0 +1,125 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mentions légales - FantasyRealm Online{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold mb-3">Mentions légales</h1>
+                <p class="text-secondary">Informations légales relatives au site FantasyRealm Online.</p>
+            </div>
+
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-body p-4">
+                    <h2 class="h4 mb-3">
+                        <i class="bi bi-building text-primary me-2" aria-hidden="true"></i>
+                        Editeur du site
+                    </h2>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2"><strong>Raison sociale :</strong> PixelVerse Studios SAS</li>
+                        <li class="mb-2"><strong>Siège social :</strong> 42 rue du Pixel, 75001 Paris, France</li>
+                        <li class="mb-2"><strong>SIRET :</strong> 123 456 789 00012</li>
+                        <li class="mb-2"><strong>RCS :</strong> Paris B 123 456 789</li>
+                        <li class="mb-2"><strong>Capital social :</strong> 50 000 euros</li>
+                        <li class="mb-2"><strong>Directeur de la publication :</strong> Jean Dupont, Gérant</li>
+                        <li class="mb-2"><strong>Email :</strong> contact@pixelverse-studios.fr</li>
+                        <li class="mb-2"><strong>Téléphone :</strong> +33 1 23 45 67 89</li>
+                        <li class="mb-0"><strong>TVA intracommunautaire :</strong> FR 12 345678901</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-body p-4">
+                    <h2 class="h4 mb-3">
+                        <i class="bi bi-hdd-rack text-primary me-2" aria-hidden="true"></i>
+                        Hébergement
+                    </h2>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2"><strong>Hébergeur :</strong> OVH SAS</li>
+                        <li class="mb-2"><strong>Adresse :</strong> 2 rue Kellermann, 59100 Roubaix, France</li>
+                        <li class="mb-0"><strong>Téléphone :</strong> +33 9 72 10 10 07</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-body p-4">
+                    <h2 class="h4 mb-3">
+                        <i class="bi bi-shield-lock text-primary me-2" aria-hidden="true"></i>
+                        Propriété intellectuelle
+                    </h2>
+                    <p>
+                        L'ensemble du contenu du site FantasyRealm Online (textes, images, graphismes, logo, icônes, sons, logiciels, etc.)
+                        est la propriété exclusive de PixelVerse Studios SAS, à l'exception des marques, logos ou contenus appartenant
+                        à d'autres sociétés partenaires ou auteurs.
+                    </p>
+                    <p class="mb-0">
+                        Toute reproduction, distribution, modification, adaptation, retransmission ou publication de ces différents éléments
+                        est strictement interdite sans l'accord exprès par écrit de PixelVerse Studios SAS. Cette représentation ou
+                        reproduction, par quelque procédé que ce soit, constitue une contrefaçon sanctionnée par les articles L.335-2
+                        et suivants du Code de la propriété intellectuelle.
+                    </p>
+                </div>
+            </div>
+
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-body p-4">
+                    <h2 class="h4 mb-3">
+                        <i class="bi bi-exclamation-triangle text-primary me-2" aria-hidden="true"></i>
+                        Limitation de responsabilité
+                    </h2>
+                    <p>
+                        PixelVerse Studios SAS ne pourra être tenue responsable des dommages directs et indirects causés au matériel
+                        de l'utilisateur lors de l'accès au site FantasyRealm Online, résultant soit de l'utilisation d'un matériel
+                        ne répondant pas aux spécifications techniques requises, soit de l'apparition d'un bug ou d'une incompatibilité.
+                    </p>
+                    <p class="mb-0">
+                        PixelVerse Studios SAS ne pourra également être tenue responsable des dommages indirects consécutifs à
+                        l'utilisation du site FantasyRealm Online. Les informations présentes sur ce site sont aussi précises que
+                        possible et le site est régulièrement mis à jour, mais peut toutefois contenir des inexactitudes ou des omissions.
+                    </p>
+                </div>
+            </div>
+
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-body p-4">
+                    <h2 class="h4 mb-3">
+                        <i class="bi bi-link-45deg text-primary me-2" aria-hidden="true"></i>
+                        Liens hypertextes
+                    </h2>
+                    <p class="mb-0">
+                        Le site FantasyRealm Online peut contenir des liens hypertextes vers d'autres sites. Cependant,
+                        PixelVerse Studios SAS n'a pas la possibilité de vérifier le contenu des sites ainsi visités et n'assumera
+                        en conséquence aucune responsabilité de ce fait. La mise en place de liens vers notre site est soumise à
+                        autorisation préalable et écrite de PixelVerse Studios SAS.
+                    </p>
+                </div>
+            </div>
+
+            <div class="card bg-dark border-secondary">
+                <div class="card-body p-4">
+                    <h2 class="h4 mb-3">
+                        <i class="bi bi-balance-scale text-primary me-2" aria-hidden="true"></i>
+                        Droit applicable
+                    </h2>
+                    <p class="mb-0">
+                        Tout litige en relation avec l'utilisation du site FantasyRealm Online est soumis au droit français.
+                        En dehors des cas où la loi ne le permet pas, il est fait attribution exclusive de juridiction aux
+                        tribunaux compétents de Paris.
+                    </p>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="{{ path('app_home') }}" class="btn btn-outline-light">
+                    <i class="bi bi-arrow-left me-2" aria-hidden="true"></i>
+                    Retour à l'accueil
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

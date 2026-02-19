@@ -1,0 +1,353 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration - FantasyRealm Online{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+    <h1 class="mb-4">
+        <i class="bi bi-shield-lock" aria-hidden="true"></i>
+        Tableau de bord administrateur
+    </h1>
+
+    {# ===== Détection de l'onglet actif selon les paramètres d'URL ===== #}
+    {% set logsTabActive = app.request.query.has('pseudo')
+        or app.request.query.has('personnage_id')
+        or app.request.query.has('action')
+        or app.request.query.has('date_debut')
+        or app.request.query.has('date_fin')
+        or app.request.query.has('page') %}
+
+    {# ===== Onglets ===== #}
+    <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link {{ not logsTabActive ? 'active' : '' }}" id="employes-tab" data-bs-toggle="tab" data-bs-target="#employes-pane"
+                    type="button" role="tab" aria-controls="employes-pane" aria-selected="{{ not logsTabActive ? 'true' : 'false' }}">
+                <i class="bi bi-people" aria-hidden="true"></i>
+                Employés
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link {{ logsTabActive ? 'active' : '' }}" id="logs-tab" data-bs-toggle="tab" data-bs-target="#logs-pane"
+                    type="button" role="tab" aria-controls="logs-pane" aria-selected="{{ logsTabActive ? 'true' : 'false' }}">
+                <i class="bi bi-journal-text" aria-hidden="true"></i>
+                Logs MongoDB
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="adminTabsContent">
+
+        {# ==================== ONGLET EMPLOYÉS ==================== #}
+        <div class="tab-pane fade {{ not logsTabActive ? 'show active' : '' }}" id="employes-pane" role="tabpanel" aria-labelledby="employes-tab">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h4 mb-0">
+                    <i class="bi bi-people-fill" aria-hidden="true"></i>
+                    Liste des employés
+                </h2>
+                <a href="{{ path('app_admin_employe_create') }}" class="btn btn-success">
+                    <i class="bi bi-person-plus" aria-hidden="true"></i>
+                    Créer un employé
+                </a>
+            </div>
+
+            {% if employees is empty %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle" aria-hidden="true"></i>
+                    Aucun employé trouvé.
+                </div>
+            {% else %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th scope="col">Pseudo</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Statut</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for employee in employees %}
+                                <tr>
+                                    <td>{{ employee.pseudo }}</td>
+                                    <td>{{ employee.email }}</td>
+                                    <td>
+                                        {% if employee.suspendu %}
+                                            <span class="badge bg-danger">
+                                                <i class="bi bi-x-circle" aria-hidden="true"></i>
+                                                Suspendu
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check-circle" aria-hidden="true"></i>
+                                                Actif
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1" role="group" aria-label="Actions pour {{ employee.pseudo }}">
+                                            {# Modifier #}
+                                            <a href="{{ path('app_admin_employe_edit', { id: employee.id }) }}" class="btn btn-sm btn-outline-primary" title="Modifier">
+                                                <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                                                Modifier
+                                            </a>
+
+                                            {# Suspendre / Activer #}
+                                            <form method="post" action="{{ path('app_admin_employe_toggle_status', { id: employee.id }) }}" class="d-inline">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('toggle-status-' ~ employee.id) }}">
+                                                {% if employee.suspendu %}
+                                                    <button type="submit" class="btn btn-sm btn-outline-success" title="Activer">
+                                                        <i class="bi bi-play-circle" aria-hidden="true"></i>
+                                                        Activer
+                                                    </button>
+                                                {% else %}
+                                                    <button type="submit" class="btn btn-sm btn-outline-warning" title="Suspendre">
+                                                        <i class="bi bi-pause-circle" aria-hidden="true"></i>
+                                                        Suspendre
+                                                    </button>
+                                                {% endif %}
+                                            </form>
+
+                                            {# Supprimer #}
+                                            <form method="post" action="{{ path('app_admin_employe_delete', { id: employee.id }) }}" class="d-inline"
+                                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer l\'employé {{ employee.pseudo|e('js') }} ? Cette action est irréversible.');">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete-' ~ employee.id) }}">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer">
+                                                    <i class="bi bi-trash" aria-hidden="true"></i>
+                                                    Supprimer
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+
+        </div>
+
+        {# ==================== ONGLET LOGS MONGODB ==================== #}
+        <div class="tab-pane fade {{ logsTabActive ? 'show active' : '' }}" id="logs-pane" role="tabpanel" aria-labelledby="logs-tab">
+
+            <h2 class="h4 mb-3">
+                <i class="bi bi-journal-text" aria-hidden="true"></i>
+                Logs MongoDB
+            </h2>
+
+            {# ----- Alerte MongoDB indisponible ----- #}
+            {% if not mongoAvailable %}
+                <div class="alert alert-danger d-flex align-items-start gap-2 mb-4" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill mt-1 flex-shrink-0" aria-hidden="true"></i>
+                    <div>
+                        <strong>MongoDB indisponible.</strong>
+                        Les logs ne peuvent pas être enregistrés ni consultés.<br>
+                        <small class="text-danger-emphasis">
+                            Vérifiez que le service MongoDB est démarré (<code>mongod</code>) et que l'extension PHP
+                            <code>mongodb</code> est activée dans <code>php.ini</code>.
+                        </small>
+                    </div>
+                </div>
+            {% endif %}
+
+            {# Mapping action → [libellé, couleur badge] — utilisé dans le filtre ET le tableau #}
+            {% set actionLabels = {
+                'creation':                 ['Création',              'success'],
+                'modification_apparence':   ['Modification',          'primary'],
+                'ajout_equipement':         ['Ajout équipement',      'info'],
+                'suppression_equipement':   ['Retrait équipement',    'warning'],
+                'partage':                  ['Partage',               'info'],
+                'arret_partage':            ['Arrêt partage',         'secondary'],
+                'suppression':              ['Suppression',           'danger'],
+                'duplication':              ['Duplication',           'primary'],
+                'moderation_approbation':   ['Approbation',           'success'],
+                'moderation_rejet':         ['Rejet',                 'danger'],
+                'moderation_suppression':   ['Suppression moderée',   'danger'],
+                'moderation_avis_approuve': ['Avis approuvé',         'success'],
+                'moderation_avis_refuse':   ['Avis refusé',           'warning'],
+                'employe_creation':         ['Employé créé',          'success'],
+                'employe_suppression':      ['Employé supprimé',      'danger'],
+                'article_creation':         ['Article créé',          'success'],
+                'article_suppression':      ['Article supprimé',      'danger'],
+                'utilisateur_suppression':  ['Utilisateur supprimé',  'danger']
+            } %}
+
+            {# ----- Formulaire de filtres ----- #}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="bi bi-funnel" aria-hidden="true"></i>
+                    Filtres
+                </div>
+                <div class="card-body">
+                    <form method="get" action="{{ path('app_espace_admin') }}">
+                        <div class="row g-3">
+                            {# Pseudo #}
+                            <div class="col-md-4">
+                                <label for="filter-pseudo" class="form-label">Pseudo</label>
+                                <input type="text" class="form-control" id="filter-pseudo" name="pseudo"
+                                       value="{{ filterPseudo }}" placeholder="Rechercher par pseudo">
+                            </div>
+
+                            {# Personnage ID #}
+                            <div class="col-md-4">
+                                <label for="filter-personnage-id" class="form-label">ID Personnage</label>
+                                <input type="number" class="form-control" id="filter-personnage-id" name="personnage_id"
+                                       value="{{ filterPersonnageId }}" placeholder="ID du personnage">
+                            </div>
+
+                            {# Action #}
+                            <div class="col-md-4">
+                                <label for="filter-action" class="form-label">Action</label>
+                                <select class="form-select" id="filter-action" name="action">
+                                    <option value="">-- Toutes les actions --</option>
+                                    {% for action in availableActions %}
+                                        <option value="{{ action }}" {% if filterAction == action %}selected{% endif %}>
+                                            {{ actionLabels[action][0] ?? action }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            {# Date début #}
+                            <div class="col-md-6">
+                                <label for="filter-date-debut" class="form-label">Date début</label>
+                                <input type="date" class="form-control" id="filter-date-debut" name="date_debut"
+                                       value="{{ filterDateDebut }}">
+                            </div>
+
+                            {# Date fin #}
+                            <div class="col-md-6">
+                                <label for="filter-date-fin" class="form-label">Date fin</label>
+                                <input type="date" class="form-control" id="filter-date-fin" name="date_fin"
+                                       value="{{ filterDateFin }}">
+                            </div>
+                        </div>
+
+                        <div class="mt-3 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search" aria-hidden="true"></i>
+                                Filtrer
+                            </button>
+                            <a href="{{ path('app_espace_admin') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-lg" aria-hidden="true"></i>
+                                Réinitialiser
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {# ----- Compteur de résultats ----- #}
+            <p class="text-muted mb-3">
+                <i class="bi bi-bar-chart" aria-hidden="true"></i>
+                <strong>{{ totalLogs }}</strong> résultats total
+            </p>
+
+            {# ----- Tableau des logs ----- #}
+            {% if logs is empty %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle" aria-hidden="true"></i>
+                    Aucun log trouvé pour les critères sélectionnés.
+                </div>
+            {% else %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Pseudo</th>
+                                <th scope="col">ID Personnage</th>
+                                <th scope="col">Nom Personnage</th>
+                                <th scope="col">Action</th>
+                                <th scope="col">Détails</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in logs %}
+                                {% set actionInfo = actionLabels[log.action] ?? [log.action, 'secondary'] %}
+                                <tr>
+                                    <td>
+                                        <small>{{ log.date }}</small>
+                                    </td>
+                                    <td>{{ log.pseudo }}</td>
+                                    <td>{{ log.id_personnage }}</td>
+                                    <td>{{ log.nom_personnage }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ actionInfo[1] }}{{ actionInfo[1] in ['warning', 'info'] ? ' text-dark' : '' }}">{{ actionInfo[0] }}</span>
+                                    </td>
+                                    <td>
+                                        <small>{{ log.details }}</small>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {# ----- Pagination ----- #}
+                {% if totalPages > 1 %}
+                    <nav aria-label="Pagination des logs">
+                        <ul class="pagination justify-content-center">
+                            {# Précédent #}
+                            <li class="page-item {% if currentPage <= 1 %}disabled{% endif %}">
+                                <a class="page-link"
+                                   href="{{ path('app_espace_admin', {
+                                       page: currentPage - 1,
+                                       pseudo: filterPseudo,
+                                       personnage_id: filterPersonnageId,
+                                       action: filterAction,
+                                       date_debut: filterDateDebut,
+                                       date_fin: filterDateFin
+                                   }) }}"
+                                   {% if currentPage <= 1 %}tabindex="-1" aria-disabled="true"{% endif %}>
+                                    <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                                    Précédent
+                                </a>
+                            </li>
+
+                            {# Numéros de pages #}
+                            {% for page in 1..totalPages %}
+                                <li class="page-item {% if page == currentPage %}active{% endif %}">
+                                    <a class="page-link"
+                                       href="{{ path('app_espace_admin', {
+                                           page: page,
+                                           pseudo: filterPseudo,
+                                           personnage_id: filterPersonnageId,
+                                           action: filterAction,
+                                           date_debut: filterDateDebut,
+                                           date_fin: filterDateFin
+                                       }) }}"
+                                       {% if page == currentPage %}aria-current="page"{% endif %}>
+                                        {{ page }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+
+                            {# Suivant #}
+                            <li class="page-item {% if currentPage >= totalPages %}disabled{% endif %}">
+                                <a class="page-link"
+                                   href="{{ path('app_espace_admin', {
+                                       page: currentPage + 1,
+                                       pseudo: filterPseudo,
+                                       personnage_id: filterPersonnageId,
+                                       action: filterAction,
+                                       date_debut: filterDateDebut,
+                                       date_fin: filterDateFin
+                                   }) }}"
+                                   {% if currentPage >= totalPages %}tabindex="-1" aria-disabled="true"{% endif %}>
+                                    Suivant
+                                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                {% endif %}
+            {% endif %}
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}

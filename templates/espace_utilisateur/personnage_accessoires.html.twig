@@ -1,0 +1,151 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Equipement de {{ personnage.nom }} - FantasyRealm Online{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    {# Back link #}
+    <div class="mb-4">
+        <a href="{{ path('app_espace_utilisateur') }}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>
+            Retour à mon espace
+        </a>
+    </div>
+
+    <div class="d-flex flex-column flex-md-row align-items-start gap-4 mb-4">
+        {# Character Preview #}
+        {% if personnage.imageDataUrl %}
+            <div class="flex-shrink-0">
+                <img src="{{ personnage.imageDataUrl }}"
+                     alt="Portrait de {{ personnage.nom }}"
+                     class="rounded border border-secondary"
+                     style="width: 100px; height: 100px; object-fit: cover;">
+            </div>
+        {% endif %}
+        <div>
+            <h1 class="display-6 fw-bold mb-1">
+                <i class="bi bi-bag text-primary" aria-hidden="true"></i>
+                Equipement de « {{ personnage.nom }} »
+            </h1>
+            <p class="text-secondary mb-0">Ajoutez ou retirez des articles pour équiper votre personnage.</p>
+        </div>
+    </div>
+
+    {# Article Type Tabs #}
+    <ul class="nav nav-tabs mb-4" id="articleTypeTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="vetement-tab" data-bs-toggle="tab" data-bs-target="#vetement-pane" type="button" role="tab" aria-controls="vetement-pane" aria-selected="true">
+                <i class="bi bi-person-standing me-1" aria-hidden="true"></i>
+                Vêtements
+                {% if articlesByType.vetement is defined %}
+                    <span class="badge bg-secondary ms-1">{{ articlesByType.vetement|length }}</span>
+                {% endif %}
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="armure-tab" data-bs-toggle="tab" data-bs-target="#armure-pane" type="button" role="tab" aria-controls="armure-pane" aria-selected="false">
+                <i class="bi bi-shield me-1" aria-hidden="true"></i>
+                Armures
+                {% if articlesByType.armure is defined %}
+                    <span class="badge bg-secondary ms-1">{{ articlesByType.armure|length }}</span>
+                {% endif %}
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="accessoire-tab" data-bs-toggle="tab" data-bs-target="#accessoire-pane" type="button" role="tab" aria-controls="accessoire-pane" aria-selected="false">
+                <i class="bi bi-gem me-1" aria-hidden="true"></i>
+                Accessoires
+                {% if articlesByType.accessoire is defined %}
+                    <span class="badge bg-secondary ms-1">{{ articlesByType.accessoire|length }}</span>
+                {% endif %}
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="arme-tab" data-bs-toggle="tab" data-bs-target="#arme-pane" type="button" role="tab" aria-controls="arme-pane" aria-selected="false">
+                <i class="bi bi-crosshair me-1" aria-hidden="true"></i>
+                Armes
+                {% if articlesByType.arme is defined %}
+                    <span class="badge bg-secondary ms-1">{{ articlesByType.arme|length }}</span>
+                {% endif %}
+            </button>
+        </li>
+    </ul>
+
+    {# Tab Content #}
+    <div class="tab-content" id="articleTypeTabContent">
+        {% set types = ['vetement', 'armure', 'accessoire', 'arme'] %}
+        {% for type in types %}
+            <div class="tab-pane fade {{ loop.first ? 'show active' : '' }}"
+                 id="{{ type }}-pane"
+                 role="tabpanel"
+                 aria-labelledby="{{ type }}-tab"
+                 tabindex="0">
+
+                {% if articlesByType[type] is defined and articlesByType[type]|length > 0 %}
+                    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3">
+                        {% for article in articlesByType[type] %}
+                            <div class="col">
+                                <div class="card bg-dark border-{{ article.id in equippedArticleIds ? 'primary' : 'secondary' }} h-100 text-center">
+                                    {# Article Image #}
+                                    {% if article.imageDataUrl %}
+                                        <img src="{{ article.imageDataUrl }}"
+                                             alt="{{ article.nom }}"
+                                             class="card-img-top p-2"
+                                             style="height: 120px; object-fit: contain;">
+                                    {% else %}
+                                        <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 120px;">
+                                            <i class="bi bi-box-seam display-4 text-muted" aria-hidden="true"></i>
+                                        </div>
+                                    {% endif %}
+
+                                    <div class="card-body py-2 px-2">
+                                        <p class="card-title small mb-2 text-light">{{ article.nom }}</p>
+
+                                        {% if article.id in equippedArticleIds %}
+                                            {# Equipped - show remove button #}
+                                            <form method="post" action="{{ path('app_personnage_accessoires', { id: personnage.id }) }}">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('accessoires_' ~ personnage.id) }}">
+                                                <input type="hidden" name="article_id" value="{{ article.id }}">
+                                                <input type="hidden" name="action" value="retirer">
+                                                <button type="submit" class="btn btn-outline-danger btn-sm w-100" aria-label="Retirer {{ article.nom }}">
+                                                    <i class="bi bi-dash-circle me-1" aria-hidden="true"></i>
+                                                    Retirer
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            {# Not equipped - show add button #}
+                                            <form method="post" action="{{ path('app_personnage_accessoires', { id: personnage.id }) }}">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('accessoires_' ~ personnage.id) }}">
+                                                <input type="hidden" name="article_id" value="{{ article.id }}">
+                                                <input type="hidden" name="action" value="ajouter">
+                                                <button type="submit" class="btn btn-outline-success btn-sm w-100" aria-label="Ajouter {{ article.nom }}">
+                                                    <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
+                                                    Ajouter
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+
+                                    {% if article.id in equippedArticleIds %}
+                                        <div class="card-footer bg-primary bg-opacity-10 border-primary py-1">
+                                            <small class="text-primary">
+                                                <i class="bi bi-check-circle-fill me-1" aria-hidden="true"></i>
+                                                Equipé
+                                            </small>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-box-seam display-4 text-secondary" aria-hidden="true"></i>
+                        <p class="text-secondary mt-2 mb-0">Aucun article de ce type disponible.</p>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

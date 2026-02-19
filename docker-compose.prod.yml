@@ -1,0 +1,81 @@
+services:
+  php:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: fantasyrealm_php
+    restart: unless-stopped
+    volumes:
+      - var_data:/var/www/html/var
+      - assets_data:/mnt/assets
+      # Pas de mount du code source en prod : le code est dans l'image
+    depends_on:
+      - mysql
+      - mongodb
+    environment:
+      APP_ENV: "prod"
+      APP_SECRET: "${APP_SECRET}"
+      DATABASE_URL: "mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}?serverVersion=8.0&charset=utf8mb4"
+      MONGODB_URL: "mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongodb:27017/${MONGODB_DB}?authSource=admin"
+      MONGODB_DB: "${MONGODB_DB}"
+      MAILER_DSN: "${MAILER_DSN}"
+    networks:
+      - fantasyrealm
+
+  nginx:
+    image: nginx:alpine
+    container_name: fantasyrealm_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/prod.conf:/etc/nginx/conf.d/default.conf
+      - ./public:/var/www/html/public:ro
+      - assets_data:/var/www/html/public/assets:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - php
+    networks:
+      - fantasyrealm
+
+  mysql:
+    image: mysql:8.0
+    container_name: fantasyrealm_mysql
+    restart: unless-stopped
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_DATABASE: "${MYSQL_DATABASE}"
+      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+    # Aucun port exposé vers l'extérieur en production
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/01-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./database/02-data.sql:/docker-entrypoint-initdb.d/02-data.sql
+    networks:
+      - fantasyrealm
+
+  mongodb:
+    image: mongo:latest
+    container_name: fantasyrealm_mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "${MONGO_USER}"
+      MONGO_INITDB_ROOT_PASSWORD: "${MONGO_PASSWORD}"
+    # Aucun port exposé vers l'extérieur en production
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - fantasyrealm
+
+volumes:
+  mysql_data:
+  mongo_data:
+  var_data:
+  assets_data:
+
+networks:
+  fantasyrealm:
+    driver: bridge
