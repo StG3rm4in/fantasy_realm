@@ -30,7 +30,13 @@ cd fantasy_realm
 # 2. Démarrer les conteneurs
 docker-compose up -d --build
 
-# 3. Vider le cache si besoin
+# 3. Installer les dépendances de développement (outils de débogage de Symfony)
+#    L'image Docker est construite pour la production, sans ces outils, alors
+#    qu'en local l'application tourne en mode dev : sans cette étape, toutes
+#    les pages renvoient une erreur 500.
+docker-compose exec php composer install
+
+# 4. Vider le cache si besoin
 docker-compose exec php php bin/console cache:clear
 ```
 
