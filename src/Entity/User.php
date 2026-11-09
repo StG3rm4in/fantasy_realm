@@ -36,10 +36,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     private ?string $pseudo = null;
 
-    #[ORM\Column(name: 'mail', length: 50, unique: true)]
+    #[ORM\Column(name: 'mail', length: 255, unique: true)]
     #[Assert\NotBlank(message: 'L\'email est requis')]
     #[Assert\Email(message: 'L\'email {{ value }} n\'est pas valide')]
-    #[Assert\Length(max: 50, maxMessage: 'L\'email ne peut pas dépasser {{ limit }} caractères')]
+    #[Assert\Length(max: 255, maxMessage: 'L\'email ne peut pas dépasser {{ limit }} caractères')]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
@@ -96,7 +96,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setEmail(string $email): static
     {
-        $this->email = $email;
+        $this->email = mb_strtolower($email);
         return $this;
     }
 
