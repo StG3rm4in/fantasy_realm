@@ -10,11 +10,14 @@ use Symfony\Component\Mime\Email;
  */
 class MailService
 {
-    private string $fromEmail = 'noreply@pixelverse.com';
-    private string $contactEmail = 'contact@pixelverse.com';
-
+    /**
+     * Les adresses viennent de la configuration (MAILER_FROM et CONTACT_EMAIL),
+     * voir config/services.yaml.
+     */
     public function __construct(
-        private MailerInterface $mailer
+        private MailerInterface $mailer,
+        private string $fromEmail,
+        private string $contactEmail,
     ) {
     }
 
