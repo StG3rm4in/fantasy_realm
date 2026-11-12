@@ -9,6 +9,8 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     libzip-dev \
     libicu-dev \
+    libssl-dev \
+    pkg-config \
     zip \
     unzip \
     && docker-php-ext-configure intl \
