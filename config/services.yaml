@@ -34,3 +34,9 @@ services:
             $mongoUrl: '%env(MONGODB_URL)%'
             $mongoDb: '%env(MONGODB_DB)%'
 
+    # Adresses des mails, lues dans la configuration plutôt qu'écrites dans le code
+    App\Service\MailService:
+        arguments:
+            $fromEmail: '%env(MAILER_FROM)%'
+            $contactEmail: '%env(CONTACT_EMAIL)%'
+

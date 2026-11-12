@@ -4,7 +4,10 @@ Application Symfony 8.0 de gestion de personnages MMORPG pour PixelVerse Studios
 
 ---
 
-## Comptes par défaut (à changer immédiatement en production)
+## Comptes du jeu d'essai (environnement local uniquement)
+
+Ces mots de passe ne valent qu'en local. En production, ces comptes ont
+d'autres mots de passe, communiqués au jury dans la copie.
 
 | Rôle | Pseudo | Email | Mot de passe |
 |---|---|---|---|
@@ -30,7 +33,13 @@ cd fantasy_realm
 # 2. Démarrer les conteneurs
 docker-compose up -d --build
 
-# 3. Vider le cache si besoin
+# 3. Installer les dépendances de développement (outils de débogage de Symfony)
+#    L'image Docker est construite pour la production, sans ces outils, alors
+#    qu'en local l'application tourne en mode dev : sans cette étape, toutes
+#    les pages renvoient une erreur 500.
+docker-compose exec php composer install
+
+# 4. Vider le cache si besoin
 docker-compose exec php php bin/console cache:clear
 ```
 
@@ -177,7 +186,7 @@ docker exec fantasyrealm_php php bin/console about
 
 ### Étape 7 — Changer les mots de passe par défaut
 
-Connectez-vous sur l'application avec le compte admin (`admin@pixelverse.com` / `Admin@12345!`) et :
+Connectez-vous sur l'application avec le compte admin du jeu d'essai et :
 
 1. **Changer le mot de passe admin** : espace admin → compte admin → modifier
 2. **Supprimer ou modifier le compte employé de test** (`moderateur1`)
