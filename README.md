@@ -4,7 +4,10 @@ Application Symfony 8.0 de gestion de personnages MMORPG pour PixelVerse Studios
 
 ---
 
-## Comptes par défaut (à changer immédiatement en production)
+## Comptes du jeu d'essai (environnement local uniquement)
+
+Ces mots de passe ne valent qu'en local. En production, ces comptes ont
+d'autres mots de passe, communiqués au jury dans la copie.
 
 | Rôle | Pseudo | Email | Mot de passe |
 |---|---|---|---|
@@ -183,7 +186,7 @@ docker exec fantasyrealm_php php bin/console about
 
 ### Étape 7 — Changer les mots de passe par défaut
 
-Connectez-vous sur l'application avec le compte admin (`admin@pixelverse.com` / `Admin@12345!`) et :
+Connectez-vous sur l'application avec le compte admin du jeu d'essai et :
 
 1. **Changer le mot de passe admin** : espace admin → compte admin → modifier
 2. **Supprimer ou modifier le compte employé de test** (`moderateur1`)
