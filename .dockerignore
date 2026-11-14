@@ -3,3 +3,5 @@ var/
 node_modules/
 .env.local
 .env.*.local
+# Secrets de production : transmis par docker-compose.prod.yml, jamais copies dans l'image
+.env.prod
