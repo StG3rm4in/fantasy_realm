@@ -21,13 +21,13 @@ VALUES ('moderateur1', 'moderateur@pixelverse.com', '$2y$12$YUcWxcvOwMNQtkviSmwp
 
 -- Comptes utilisateurs de test (mot de passe: User@12345678!)
 INSERT INTO utilisateur (pseudo, mail, password, suspendu, motdepasse_a_modifier, id_role)
-VALUES ('chevalier_noir', 'chevalier@test.com', '$2y$12$0QUW3DEXp1YzUJIIkLw61ObDEIIFKEpo4/zGELE2TriLliIhkVGtO', FALSE, FALSE, 1);
+VALUES ('chevalier_noir', 'chevalier@example.com', '$2y$12$0QUW3DEXp1YzUJIIkLw61ObDEIIFKEpo4/zGELE2TriLliIhkVGtO', FALSE, FALSE, 1);
 
 INSERT INTO utilisateur (pseudo, mail, password, suspendu, motdepasse_a_modifier, id_role)
-VALUES ('elfe_sylvain', 'elfe@test.com', '$2y$12$0QUW3DEXp1YzUJIIkLw61ObDEIIFKEpo4/zGELE2TriLliIhkVGtO', FALSE, FALSE, 1);
+VALUES ('elfe_sylvain', 'elfe@example.com', '$2y$12$0QUW3DEXp1YzUJIIkLw61ObDEIIFKEpo4/zGELE2TriLliIhkVGtO', FALSE, FALSE, 1);
 
 INSERT INTO utilisateur (pseudo, mail, password, suspendu, motdepasse_a_modifier, id_role)
-VALUES ('mage_arcane', 'mage@test.com', '$2y$12$0QUW3DEXp1YzUJIIkLw61ObDEIIFKEpo4/zGELE2TriLliIhkVGtO', FALSE, FALSE, 1);
+VALUES ('mage_arcane', 'mage@example.com', '$2y$12$0QUW3DEXp1YzUJIIkLw61ObDEIIFKEpo4/zGELE2TriLliIhkVGtO', FALSE, FALSE, 1);
 
 -- Personnages de test
 INSERT INTO personnage (nom, genre, couleur_peau, couleur_yeux, couleur_cheveux, forme_yeux, forme_nez, forme_bouche, partage, autorise, date_creation, id_utilisateur)

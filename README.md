@@ -13,7 +13,7 @@ d'autres mots de passe, communiqués au jury dans la copie.
 |---|---|---|---|
 | Administrateur | `admin` | `admin@pixelverse.com` | `Admin@12345!` |
 | Employé | `moderateur1` | `moderateur@pixelverse.com` | `Employe@1234!` |
-| Utilisateur test | `chevalier_noir` | `chevalier@test.com` | `User@12345678!` |
+| Utilisateur test | `chevalier_noir` | `chevalier@example.com` | `User@12345678!` |
 
 ---
 

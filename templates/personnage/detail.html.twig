@@ -183,7 +183,7 @@
                         </div>
                         <p class="mb-1">{{ userCommentaire.commentaire }}</p>
                         <small class="text-secondary">
-                            Publié le {{ userCommentaire.dateCommentaire|date('d/m/Y à H:i') }}
+                            Publié le {{ userCommentaire.dateCommentaire|date('d/m/Y') }}
                             {% if userCommentaire.enAttente %}
                                 <span class="badge bg-warning text-dark ms-2">En attente de modération</span>
                             {% elseif userCommentaire.refuse %}
@@ -265,7 +265,7 @@
                                 <p class="mb-1">{{ commentaire.commentaire }}</p>
                                 <small class="text-secondary">
                                     <i class="bi bi-calendar3 me-1" aria-hidden="true"></i>
-                                    {{ commentaire.dateCommentaire|date('d/m/Y à H:i') }}
+                                    {{ commentaire.dateCommentaire|date('d/m/Y') }}
                                 </small>
                             </div>
                         </div>
