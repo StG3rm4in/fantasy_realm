@@ -204,7 +204,7 @@
                         </h3>
                     </div>
                     <div class="card-body">
-                        {{ form_start(commentaireForm) }}
+                        {{ form_start(commentaireForm, { 'attr': { 'id': 'commentaire-form' } }) }}
                             <div class="mb-3">
                                 <label class="form-label">Note</label>
                                 <div class="star-rating d-flex gap-1" role="radiogroup" aria-label="Sélectionner une note de 1 à 5 étoiles">
