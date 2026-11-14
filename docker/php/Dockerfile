@@ -19,6 +19,9 @@ RUN apt-get update && apt-get install -y \
 # Install MongoDB extension
 RUN pecl install mongodb && docker-php-ext-enable mongodb
 
+# Configuration PHP de production : les erreurs sont journalisees, jamais affichees aux visiteurs
+RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+
 # PHP performance config
 COPY docker/php/php-dev.ini /usr/local/etc/php/conf.d/zz-custom.ini
 
