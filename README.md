@@ -11,8 +11,8 @@ d'autres mots de passe, communiqués au jury dans la copie.
 
 | Rôle | Pseudo | Email | Mot de passe |
 |---|---|---|---|
-| Administrateur | `admin` | `admin@pixelverse.com` | `Admin@12345!` |
-| Employé | `moderateur1` | `moderateur@pixelverse.com` | `Employe@1234!` |
+| Administrateur | `admin` | `admin@example.com` | `Admin@12345!` |
+| Employé | `moderateur1` | `moderateur@example.com` | `Employe@1234!` |
 | Utilisateur test | `chevalier_noir` | `chevalier@example.com` | `User@12345678!` |
 
 ---
