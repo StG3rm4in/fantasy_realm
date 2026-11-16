@@ -13,11 +13,11 @@ INSERT INTO role (libelle) VALUES ('administrateur');
 
 -- Compte administrateur (mot de passe: Admin@12345!)
 INSERT INTO utilisateur (pseudo, mail, password, suspendu, motdepasse_a_modifier, id_role)
-VALUES ('admin', 'admin@pixelverse.com', '$2y$12$JZaeAc479q4w5Hxi/DE16usYD7PK3DqHXxm6EcIaTrpKxQ8xpGana', FALSE, FALSE, 3);
+VALUES ('admin', 'admin@example.com', '$2y$12$JZaeAc479q4w5Hxi/DE16usYD7PK3DqHXxm6EcIaTrpKxQ8xpGana', FALSE, FALSE, 3);
 
 -- Compte employé de test (mot de passe: Employe@1234!)
 INSERT INTO utilisateur (pseudo, mail, password, suspendu, motdepasse_a_modifier, id_role)
-VALUES ('moderateur1', 'moderateur@pixelverse.com', '$2y$12$YUcWxcvOwMNQtkviSmwpAeep5ybqRmQK70cmWMzfqobhf7ImTeW9a', FALSE, FALSE, 2);
+VALUES ('moderateur1', 'moderateur@example.com', '$2y$12$YUcWxcvOwMNQtkviSmwpAeep5ybqRmQK70cmWMzfqobhf7ImTeW9a', FALSE, FALSE, 2);
 
 -- Comptes utilisateurs de test (mot de passe: User@12345678!)
 INSERT INTO utilisateur (pseudo, mail, password, suspendu, motdepasse_a_modifier, id_role)
