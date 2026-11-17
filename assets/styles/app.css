@@ -32,7 +32,7 @@ main {
 
 /* ===== Buttons ===== */
 .btn-hero {
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    background: linear-gradient(135deg, var(--button-color), var(--button-hover));
     border: none;
     color: white;
     padding: 0.75rem 2rem;
@@ -56,7 +56,7 @@ main {
 }
 
 .btn-hero-outline:hover {
-    background: var(--primary-color);
+    background: var(--button-color);
     color: white;
 }
 
@@ -177,6 +177,172 @@ main {
     border-color: var(--primary-color) !important;
 }
 
+/* ===== Alignement sur la charte graphique =====
+ * Bootstrap garde ses propres couleurs (bleu #0d6efd, vert #198754...) tant
+ * qu'on ne remplace pas ses variables :
+ * - les variables --bs-*-rgb pilotent les utilitaires text-*, bg-* et border-* ;
+ * - chaque classe .btn-* a ses propres variables --bs-btn-*.
+ * Les couleurs de la charte sont des nuances 500 de la palette Tailwind ;
+ * le survol utilise la nuance 600, comme pour le violet (#8b5cf6 -> #7c3aed).
+ */
+:root {
+    --success-color: #22c55e;
+    --danger-color: #ef4444;
+    --warning-color: #eab308;
+    --text-secondary-color: #9ca3af;
+    --text-on-color: #0f0f23; /* texte foncé sur les couleurs vives */
+    /* Boutons violets à texte blanc : #7c3aed (5,7:1) plutôt que #8b5cf6
+       (4,2:1, sous le seuil de 4,5:1 du RGAA). Survol : #6d28d9 (7,1:1). */
+    --button-color: #7c3aed;
+    --button-hover: #6d28d9;
+
+    --bs-success-rgb: 34, 197, 94;
+    --bs-danger-rgb: 239, 68, 68;
+    --bs-warning-rgb: 234, 179, 8;
+    --bs-dark-rgb: 30, 30, 46; /* .bg-dark (cartes, modales) : #1e1e2e */
+}
+
+[data-bs-theme=dark] {
+    --bs-body-color: #e2e8f0;
+    --bs-body-color-rgb: 226, 232, 240;
+}
+
+/* Texte secondaire : #9ca3af au lieu du gris Bootstrap #6c757d,
+   trop peu contrasté sur fond sombre (environ 3,6:1, le RGAA demande 4,5:1). */
+.text-secondary {
+    color: var(--text-secondary-color) !important;
+}
+
+/* Badges pleins vert et rouge : texte foncé, le blanc n'y atteint
+   que 2,3:1 (vert) et 3,8:1 (rouge). */
+.badge.bg-success,
+.badge.bg-danger {
+    color: var(--text-on-color) !important;
+}
+
+.btn-primary {
+    --bs-btn-bg: var(--button-color);
+    --bs-btn-border-color: var(--button-color);
+    --bs-btn-hover-bg: var(--button-hover);
+    --bs-btn-hover-border-color: var(--button-hover);
+    --bs-btn-active-bg: var(--button-hover);
+    --bs-btn-active-border-color: var(--button-hover);
+    --bs-btn-disabled-bg: var(--button-color);
+    --bs-btn-disabled-border-color: var(--button-color);
+    --bs-btn-focus-shadow-rgb: 124, 58, 237;
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--primary-color);
+    --bs-btn-border-color: var(--primary-color);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--button-color);
+    --bs-btn-hover-border-color: var(--button-color);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--button-hover);
+    --bs-btn-active-border-color: var(--button-hover);
+    --bs-btn-disabled-color: var(--primary-color);
+    --bs-btn-disabled-border-color: var(--primary-color);
+    --bs-btn-focus-shadow-rgb: 139, 92, 246;
+}
+
+.btn-outline-secondary {
+    --bs-btn-color: var(--text-secondary-color);
+    --bs-btn-border-color: var(--text-secondary-color);
+    --bs-btn-hover-color: var(--text-on-color);
+    --bs-btn-hover-bg: var(--text-secondary-color);
+    --bs-btn-hover-border-color: var(--text-secondary-color);
+    --bs-btn-active-color: var(--text-on-color);
+    --bs-btn-active-bg: var(--text-secondary-color);
+    --bs-btn-active-border-color: var(--text-secondary-color);
+    --bs-btn-focus-shadow-rgb: 156, 163, 175;
+}
+
+.btn-success {
+    --bs-btn-color: var(--text-on-color);
+    --bs-btn-bg: var(--success-color);
+    --bs-btn-border-color: var(--success-color);
+    --bs-btn-hover-color: var(--text-on-color);
+    --bs-btn-hover-bg: #16a34a;
+    --bs-btn-hover-border-color: #16a34a;
+    --bs-btn-active-color: var(--text-on-color);
+    --bs-btn-active-bg: #16a34a;
+    --bs-btn-active-border-color: #16a34a;
+    --bs-btn-disabled-color: var(--text-on-color);
+    --bs-btn-disabled-bg: var(--success-color);
+    --bs-btn-disabled-border-color: var(--success-color);
+    --bs-btn-focus-shadow-rgb: 34, 197, 94;
+}
+
+.btn-outline-success {
+    --bs-btn-color: var(--success-color);
+    --bs-btn-border-color: var(--success-color);
+    --bs-btn-hover-color: var(--text-on-color);
+    --bs-btn-hover-bg: var(--success-color);
+    --bs-btn-hover-border-color: var(--success-color);
+    --bs-btn-active-color: var(--text-on-color);
+    --bs-btn-active-bg: var(--success-color);
+    --bs-btn-active-border-color: var(--success-color);
+    --bs-btn-focus-shadow-rgb: 34, 197, 94;
+}
+
+/* Rouge : texte foncé au repos (4,9:1), blanc au survol sur #dc2626 (4,8:1). */
+.btn-danger {
+    --bs-btn-color: var(--text-on-color);
+    --bs-btn-bg: var(--danger-color);
+    --bs-btn-border-color: var(--danger-color);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #dc2626;
+    --bs-btn-hover-border-color: #dc2626;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #dc2626;
+    --bs-btn-active-border-color: #dc2626;
+    --bs-btn-disabled-color: var(--text-on-color);
+    --bs-btn-disabled-bg: var(--danger-color);
+    --bs-btn-disabled-border-color: var(--danger-color);
+    --bs-btn-focus-shadow-rgb: 239, 68, 68;
+}
+
+.btn-outline-danger {
+    --bs-btn-color: var(--danger-color);
+    --bs-btn-border-color: var(--danger-color);
+    --bs-btn-hover-color: var(--text-on-color);
+    --bs-btn-hover-bg: var(--danger-color);
+    --bs-btn-hover-border-color: var(--danger-color);
+    --bs-btn-active-color: var(--text-on-color);
+    --bs-btn-active-bg: var(--danger-color);
+    --bs-btn-active-border-color: var(--danger-color);
+    --bs-btn-focus-shadow-rgb: 239, 68, 68;
+}
+
+.btn-warning {
+    --bs-btn-color: var(--text-on-color);
+    --bs-btn-bg: var(--warning-color);
+    --bs-btn-border-color: var(--warning-color);
+    --bs-btn-hover-color: var(--text-on-color);
+    --bs-btn-hover-bg: #ca8a04;
+    --bs-btn-hover-border-color: #ca8a04;
+    --bs-btn-active-color: var(--text-on-color);
+    --bs-btn-active-bg: #ca8a04;
+    --bs-btn-active-border-color: #ca8a04;
+    --bs-btn-disabled-color: var(--text-on-color);
+    --bs-btn-disabled-bg: var(--warning-color);
+    --bs-btn-disabled-border-color: var(--warning-color);
+    --bs-btn-focus-shadow-rgb: 234, 179, 8;
+}
+
+.btn-outline-warning {
+    --bs-btn-color: var(--warning-color);
+    --bs-btn-border-color: var(--warning-color);
+    --bs-btn-hover-color: var(--text-on-color);
+    --bs-btn-hover-bg: var(--warning-color);
+    --bs-btn-hover-border-color: var(--warning-color);
+    --bs-btn-active-color: var(--text-on-color);
+    --bs-btn-active-bg: var(--warning-color);
+    --bs-btn-active-border-color: var(--warning-color);
+    --bs-btn-focus-shadow-rgb: 234, 179, 8;
+}
+
 /* ===== Star Rating ===== */
 .star-rating .bi-star-fill {
     color: var(--accent-color);
@@ -248,7 +414,7 @@ main {
 
 /* ===== Navigation ===== */
 .navbar-fantasy {
-    background: rgba(15, 15, 35, 0.9);
+    background: rgba(17, 24, 39, 0.9); /* #111827, fond secondaire de la charte */
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(139, 92, 246, 0.1);
 }
