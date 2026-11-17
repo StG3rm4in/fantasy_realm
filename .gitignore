@@ -23,4 +23,9 @@
 .claude/settings.local.json
 .env.dev
 .env.test
-/docs
+
+# Copie ECF : document à rendre séparément, hors du dépôt
+/docs/Copie_ECF.pdf
+/docs/copie-ecf-reponses.md
+# En cours de réécriture, versionné une fois à jour
+/docs/gestion-de-projet.md
