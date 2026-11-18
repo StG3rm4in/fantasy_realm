@@ -121,12 +121,9 @@ class EspaceEmployeController extends AbstractController
     #[Route('/personnages/{id}', name: 'app_employe_personnage_show', requirements: ['id' => '\d+'])]
     public function showPersonnage(Personnage $personnage): Response
     {
-        // Seuls les personnages en attente de modération sont accessibles via cette page
-        if ($personnage->getAutorise() !== null) {
-            $this->addFlash('info', 'Ce personnage n\'est pas en attente de modération.');
-            return $this->redirectToRoute('app_espace_employe');
-        }
-
+        // Page ouverte pour tous les personnages : l'employé doit pouvoir
+        // supprimer un personnage déjà approuvé. Les boutons Approuver et
+        // Rejeter ne s'affichent que pour un personnage en attente (template).
         return $this->render('espace_employe/personnage_show.html.twig', [
             'personnage' => $personnage,
         ]);
