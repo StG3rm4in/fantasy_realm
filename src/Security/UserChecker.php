@@ -12,6 +12,14 @@ class UserChecker implements UserCheckerInterface
 {
     public function checkPreAuth(UserInterface $user): void
     {
+    }
+
+    /**
+     * Appelé APRÈS la vérification du mot de passe : sinon, un mail et un mot de
+     * passe quelconque suffisaient pour savoir qu'un compte existe et est suspendu.
+     */
+    public function checkPostAuth(UserInterface $user, ?TokenInterface $token = null): void
+    {
         if (!$user instanceof User) {
             return;
         }
@@ -19,9 +27,5 @@ class UserChecker implements UserCheckerInterface
         if ($user->isSuspendu()) {
             throw new CustomUserMessageAccountStatusException('Votre compte est suspendu. Veuillez contacter un administrateur.');
         }
-    }
-
-    public function checkPostAuth(UserInterface $user, ?TokenInterface $token = null): void
-    {
     }
 }

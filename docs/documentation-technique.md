@@ -280,22 +280,22 @@ sequenceDiagram
 
     Utilisateur->>Symfony Security: POST /connexion (_username, _password, _csrf_token)
     Symfony Security->>Symfony Security: Validation du jeton CSRF
-    Symfony Security->>UserProvider: loadUserByIdentifier(identifiant)
-    UserProvider->>MySQL: SELECT utilisateur WHERE mail = ? (sinon WHERE pseudo = ?)
+    Symfony Security->>UserProvider: loadUserByIdentifier(mail)
+    UserProvider->>MySQL: SELECT utilisateur WHERE mail = ?
     MySQL-->>UserProvider: Utilisateur
     UserProvider-->>Symfony Security: User
 
-    Symfony Security->>UserChecker: checkPreAuth(user), avant le mot de passe
+    Symfony Security->>Symfony Security: password_verify (bcrypt)
+    alt Mot de passe faux
+        Symfony Security-->>Utilisateur: Retour à /connexion, « Identifiants invalides. »
+    end
+
+    Symfony Security->>UserChecker: checkPostAuth(user), après le mot de passe
     alt Compte suspendu
         UserChecker-->>Symfony Security: CustomUserMessageAccountStatusException
         Symfony Security-->>Utilisateur: Erreur « compte suspendu »
     else Compte actif
         UserChecker-->>Symfony Security: OK
-    end
-
-    Symfony Security->>Symfony Security: password_verify (bcrypt)
-    alt Mot de passe faux
-        Symfony Security-->>Utilisateur: Retour à /connexion avec une erreur
     end
 
     Symfony Security->>AuthSuccessHandler: onAuthenticationSuccess(request, token)
@@ -330,8 +330,8 @@ puis envoyée en base64 avec le formulaire.
 
 | Composant | Fichier | Rôle |
 |---|---|---|
-| `UserProvider` | `src/Security/UserProvider.php` | Chargement de l'utilisateur depuis MySQL, par mail ou par pseudo |
-| `UserChecker` | `src/Security/UserChecker.php` | Refus de la connexion d'un compte suspendu (avant la vérification du mot de passe) |
+| `UserProvider` | `src/Security/UserProvider.php` | Chargement de l'utilisateur depuis MySQL, par mail ; à chaque page, un compte devenu suspendu perd sa session |
+| `UserChecker` | `src/Security/UserChecker.php` | Refus de la connexion d'un compte suspendu, après la vérification du mot de passe (pas d'indice pour qui ne le connaît pas) |
 | `AuthenticationSuccessHandler` | `src/Security/AuthenticationSuccessHandler.php` | Redirection post-login selon rôle + mot de passe à modifier |
 
 ---
