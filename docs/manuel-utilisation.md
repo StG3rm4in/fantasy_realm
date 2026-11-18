@@ -40,6 +40,12 @@
 > En local, les comptes du jeu d'essai utilisent les mots de passe indiqués
 > dans le README.
 
+> **Tester « Mot de passe oublié » :** créez d'abord un compte avec une
+> adresse mail que vous consultez. Les comptes de test utilisent des adresses
+> `example.com`, qui ne reçoivent aucun mail : leur mot de passe serait
+> remplacé par un mot de passe temporaire que personne ne pourrait lire. La
+> procédure est refusée aux comptes employé et administrateur.
+
 ---
 
 ## 3. Parcours Utilisateur
@@ -63,7 +69,7 @@
    - Employé → `/espace-employe`
    - Administrateur → `/espace-admin`
 
-> **Mot de passe oublié ?** Cliquer sur "Mot de passe oublié" → saisir email + pseudo → recevoir un mot de passe temporaire par email → se connecter → changer le mot de passe obligatoirement.
+> **Mot de passe oublié ?** Cliquer sur "Mot de passe oublié" → saisir email + pseudo → recevoir un mot de passe temporaire par email → se connecter → changer le mot de passe obligatoirement. Réservé aux comptes utilisateur (voir la section 2).
 
 ### 3.3 Création d'un personnage
 

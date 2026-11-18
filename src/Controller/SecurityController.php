@@ -171,7 +171,11 @@ class SecurityController extends AbstractController
             // Verifier si la combinaison email + pseudo existe
             $user = $userRepository->findByEmail($email);
 
-            if ($user && $user->getPseudo() === $pseudo) {
+            // Seul un compte utilisateur peut recevoir un mot de passe temporaire.
+            // Pour un employé ou l'administrateur, quiconque connaît le mail et le
+            // pseudo pourrait remplacer leur mot de passe et bloquer le compte.
+            // Le message affiché reste le même, pour ne pas révéler le rôle.
+            if ($user && $user->getPseudo() === $pseudo && $user->getRoles() === ['ROLE_USER']) {
                 // Generer un mot de passe temporaire securise (12+ caracteres, conforme CNIL)
                 $temporaryPassword = $this->generateSecurePassword();
 
