@@ -55,6 +55,12 @@ class UserProvider implements UserProviderInterface, PasswordUpgraderInterface
             throw new UserNotFoundException('User not found after refresh.');
         }
 
+        // Compte suspendu pendant qu'il est connecté : Symfony traite cette
+        // exception comme une déconnexion, dès la requête suivante.
+        if ($freshUser->isSuspendu()) {
+            throw new UserNotFoundException('Compte suspendu.');
+        }
+
         return $freshUser;
     }
 
