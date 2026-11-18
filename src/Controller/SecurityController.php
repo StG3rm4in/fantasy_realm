@@ -277,6 +277,11 @@ class SecurityController extends AbstractController
             $errors[] = 'Le mot de passe doit contenir au moins 12 caractères (recommandation CNIL).';
         }
 
+        // Au-delà, Symfony refuse de hacher le mot de passe (erreur 500)
+        if (strlen($password) > 4096) {
+            $errors[] = 'Le mot de passe ne peut pas dépasser 4096 caractères.';
+        }
+
         if (!preg_match('/[A-Z]/', $password)) {
             $errors[] = 'Le mot de passe doit contenir au moins une lettre majuscule.';
         }
