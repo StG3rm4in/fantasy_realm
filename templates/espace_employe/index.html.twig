@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Espace Employe - FantasyRealm Online{% endblock %}
+{% block title %}Espace Employé - FantasyRealm Online{% endblock %}
 
 {% block body %}
 <div class="container py-5">
@@ -8,10 +8,10 @@
     <div class="mb-5">
         <div class="d-flex align-items-center gap-3 mb-2">
             <i class="bi bi-shield-check fs-2 text-primary" aria-hidden="true"></i>
-            <h1 class="display-5 fw-bold mb-0">Espace Employe</h1>
+            <h1 class="display-5 fw-bold mb-0">Espace Employé</h1>
         </div>
         <p class="text-secondary">
-            Moderation des contenus, gestion des utilisateurs et du catalogue.
+            Modération des contenus, gestion des utilisateurs et du catalogue.
         </p>
     </div>
 
@@ -80,7 +80,7 @@
                         <div class="card-body text-center p-4">
                             <i class="bi bi-check-circle fs-2 text-success mb-2" aria-hidden="true"></i>
                             <h3 class="h2 mb-1">{{ approvedPersonnages|length }}</h3>
-                            <p class="text-secondary small mb-0">Approuves</p>
+                            <p class="text-secondary small mb-0">Approuvés</p>
                         </div>
                     </div>
                 </div>
@@ -89,7 +89,7 @@
                         <div class="card-body text-center p-4">
                             <i class="bi bi-x-circle fs-2 text-danger mb-2" aria-hidden="true"></i>
                             <h3 class="h2 mb-1">{{ rejectedPersonnages|length }}</h3>
-                            <p class="text-secondary small mb-0">Rejetes</p>
+                            <p class="text-secondary small mb-0">Rejetés</p>
                         </div>
                     </div>
                 </div>
@@ -107,7 +107,7 @@
                         <div class="card-body text-center py-5">
                             <i class="bi bi-check-circle display-1 text-secondary" aria-hidden="true"></i>
                             <h3 class="mt-4 mb-2">Aucun personnage en attente</h3>
-                            <p class="text-secondary">Tous les personnages ont ete moderes.</p>
+                            <p class="text-secondary">Tous les personnages ont été modérés.</p>
                         </div>
                     </div>
                 {% else %}
@@ -147,7 +147,7 @@
                                         </p>
                                         <p class="text-secondary small mb-1">
                                             <i class="bi bi-person-circle me-1" aria-hidden="true"></i>
-                                            Createur : {{ personnage.utilisateur.pseudo }}
+                                            Créateur : {{ personnage.utilisateur.pseudo }}
                                         </p>
                                         <p class="text-secondary small mb-3">
                                             <i class="bi bi-calendar me-1" aria-hidden="true"></i>
@@ -213,7 +213,7 @@
                 <div class="mb-4">
                     <h2 class="h5 mb-3">
                         <i class="bi bi-check-circle text-success me-2" aria-hidden="true"></i>
-                        Personnages approuves ({{ approvedPersonnages|length }})
+                        Personnages approuvés ({{ approvedPersonnages|length }})
                     </h2>
                     <div class="card bg-dark border-secondary">
                         <div class="card-body p-0">
@@ -222,10 +222,10 @@
                                     <thead class="table-dark">
                                         <tr>
                                             <th>Nom</th>
-                                            <th>Createur</th>
+                                            <th>Créateur</th>
                                             <th>Genre</th>
                                             <th>Date</th>
-                                            <th class="text-end">Detail</th>
+                                            <th class="text-end">Détail</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -268,7 +268,7 @@
                 <div class="mb-4">
                     <h2 class="h5 mb-3">
                         <i class="bi bi-x-circle text-danger me-2" aria-hidden="true"></i>
-                        Personnages rejetes ({{ rejectedPersonnages|length }})
+                        Personnages rejetés ({{ rejectedPersonnages|length }})
                     </h2>
                     <div class="card bg-dark border-secondary">
                         <div class="card-body p-0">
@@ -277,10 +277,10 @@
                                     <thead class="table-dark">
                                         <tr>
                                             <th>Nom</th>
-                                            <th>Createur</th>
+                                            <th>Créateur</th>
                                             <th>Genre</th>
                                             <th>Date</th>
-                                            <th class="text-end">Detail</th>
+                                            <th class="text-end">Détail</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -339,7 +339,7 @@
                         <div class="card-body text-center p-4">
                             <i class="bi bi-check-circle fs-2 text-success mb-2" aria-hidden="true"></i>
                             <h3 class="h2 mb-1">{{ approvedAvis|length }}</h3>
-                            <p class="text-secondary small mb-0">Approuves</p>
+                            <p class="text-secondary small mb-0">Approuvés</p>
                         </div>
                     </div>
                 </div>
@@ -357,7 +357,7 @@
                         <div class="card-body text-center py-5">
                             <i class="bi bi-check-circle display-1 text-secondary" aria-hidden="true"></i>
                             <h3 class="mt-4 mb-2">Aucun avis en attente</h3>
-                            <p class="text-secondary">Tous les avis ont ete moderes.</p>
+                            <p class="text-secondary">Tous les avis ont été modérés.</p>
                         </div>
                     </div>
                 {% else %}
@@ -422,7 +422,7 @@
                 <div class="mb-4">
                     <h2 class="h5 mb-3">
                         <i class="bi bi-check-circle text-success me-2" aria-hidden="true"></i>
-                        Avis approuves ({{ approvedAvis|length }})
+                        Avis approuvés ({{ approvedAvis|length }})
                     </h2>
                     <div class="card bg-dark border-secondary">
                         <div class="card-body p-0">
@@ -596,12 +596,12 @@
                             <div class="modal-body">
                                 <div class="alert alert-danger d-flex align-items-start gap-2" role="alert">
                                     <i class="bi bi-exclamation-triangle-fill mt-1" aria-hidden="true"></i>
-                                    <strong>Action irreversible !</strong>
+                                    <strong>Action irréversible !</strong>
                                 </div>
                                 <p>Êtes-vous sûr de vouloir supprimer définitivement l'utilisateur <strong class="text-danger">{{ user.pseudo }}</strong> ?</p>
                                 <p class="text-secondary small mb-0">
                                     <i class="bi bi-info-circle me-1" aria-hidden="true"></i>
-                                    Toutes ses donnees seront supprimees de maniere permanente.
+                                    Toutes ses données seront supprimées de manière permanente.
                                 </p>
                             </div>
                             <div class="modal-footer border-secondary">
@@ -609,7 +609,7 @@
                                 <form method="post" action="{{ path('app_employe_user_delete', {id: user.id}) }}" class="d-inline">
                                     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
                                     <button type="submit" class="btn btn-danger">
-                                        <i class="bi bi-trash me-1" aria-hidden="true"></i> Supprimer definitivement
+                                        <i class="bi bi-trash me-1" aria-hidden="true"></i> Supprimer définitivement
                                     </button>
                                 </form>
                             </div>
@@ -660,8 +660,8 @@
                                                     {# Reactiver #}
                                                     <form method="post" action="{{ path('app_employe_user_unsuspend', {id: user.id}) }}" class="d-inline">
                                                         <input type="hidden" name="_token" value="{{ csrf_token('unsuspend' ~ user.id) }}">
-                                                        <button type="submit" class="btn btn-success btn-sm" title="Reactiver">
-                                                            <i class="bi bi-play-circle me-1" aria-hidden="true"></i> Reactiver
+                                                        <button type="submit" class="btn btn-success btn-sm" title="Réactiver">
+                                                            <i class="bi bi-play-circle me-1" aria-hidden="true"></i> Réactiver
                                                         </button>
                                                     </form>
                                                     {# Supprimer #}
@@ -697,12 +697,12 @@
                             <div class="modal-body">
                                 <div class="alert alert-danger d-flex align-items-start gap-2" role="alert">
                                     <i class="bi bi-exclamation-triangle-fill mt-1" aria-hidden="true"></i>
-                                    <strong>Action irreversible !</strong>
+                                    <strong>Action irréversible !</strong>
                                 </div>
                                 <p>Êtes-vous sûr de vouloir supprimer définitivement l'utilisateur <strong class="text-danger">{{ user.pseudo }}</strong> ?</p>
                                 <p class="text-secondary small mb-0">
                                     <i class="bi bi-info-circle me-1" aria-hidden="true"></i>
-                                    Toutes ses donnees seront supprimees de maniere permanente.
+                                    Toutes ses données seront supprimées de manière permanente.
                                 </p>
                             </div>
                             <div class="modal-footer border-secondary">
@@ -710,7 +710,7 @@
                                 <form method="post" action="{{ path('app_employe_user_delete', {id: user.id}) }}" class="d-inline">
                                     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
                                     <button type="submit" class="btn btn-danger">
-                                        <i class="bi bi-trash me-1" aria-hidden="true"></i> Supprimer definitivement
+                                        <i class="bi bi-trash me-1" aria-hidden="true"></i> Supprimer définitivement
                                     </button>
                                 </form>
                             </div>
@@ -752,7 +752,7 @@
                     <i class="bi bi-bag-check display-4 text-secondary mb-3" aria-hidden="true"></i>
                     <h3 class="h5 mb-3">Gestion du catalogue d'articles</h3>
                     <p class="text-secondary mb-4">
-                        Gerez les vetements, armures, accessoires et armes disponibles pour les personnages.
+                        Gérez les vêtements, armures, accessoires et armes disponibles pour les personnages.
                     </p>
                     <div class="d-flex justify-content-center gap-3">
                         <a href="{{ path('app_employe_articles') }}" class="btn btn-primary d-flex align-items-center gap-2">
@@ -761,7 +761,7 @@
                         </a>
                         <a href="{{ path('app_employe_article_create') }}" class="btn btn-success d-flex align-items-center gap-2">
                             <i class="bi bi-plus-lg" aria-hidden="true"></i>
-                            Creer un article
+                            Créer un article
                         </a>
                     </div>
                 </div>
