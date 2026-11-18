@@ -464,6 +464,13 @@ class EspaceUtilisateurController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
+        // L'administrateur est un compte unique, qu'on ne peut pas recréer depuis
+        // l'application : il ne peut pas supprimer son propre compte.
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $this->addFlash('error', 'Le compte administrateur ne peut pas être supprimé.');
+            return $this->redirectToRoute('app_espace_utilisateur');
+        }
+
         if (!$this->isCsrfTokenValid('delete_account', $request->request->get('_token'))) {
             $this->addFlash('error', 'Jeton CSRF invalide.');
             return $this->redirectToRoute('app_espace_utilisateur');
