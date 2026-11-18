@@ -2,7 +2,7 @@
 
 **Projet :** FantasyRealm Online — Application de gestion de personnages MMORPG\
 **Client :** PixelVerse Studios\
-**Version :** 1.2 — 18 novembre 2026 (couleurs du site alignées sur la charte, contrastes RGAA, maquettes exportées)
+**Version :** 1.3 — 19 novembre 2026 (nuances de texte conformes au RGAA, maquettes exportées)
 
 ---
 
@@ -60,6 +60,12 @@ transparence (`rgba(30, 30, 46, 0.5)` et `0.3`).
 | Texte secondaire | `#9ca3af` | Sous-titres, métadonnées, paragraphes secondaires (classe `text-secondary`) |
 | Texte désactivé | `#6c757d` | Éléments inactifs, bordures des cartes |
 | Texte sur couleur vive | `#0f0f23` | Texte des badges et boutons pleins verts, rouges et jaunes |
+| Violet du texte | `#a78bfa` | Texte violet : liens actifs, `text-primary`, boutons à contour violet |
+| Rouge du texte | `#f87171` | Texte rouge : `text-danger`, boutons à contour rouge |
+
+Le violet `#8b5cf6` et le rouge `#ef4444` restent les couleurs de fond, de bordure et
+d'icône ; pour du texte de taille normale, ils n'atteignent pas 4,5:1 sur tous les
+fonds du site. Les nuances 400 de la palette Tailwind les remplacent pour le texte.
 
 ### Couleurs sémantiques (Bootstrap surchargées)
 
@@ -95,11 +101,14 @@ normale : 4,5:1.
 | Texte vert `#22c55e` | 7,2:1 | Oui |
 | Texte jaune `#eab308` | 8,6:1 | Oui |
 | Texte cyan `#0dcaf0` | 8,4:1 | Oui |
-| Texte violet `#8b5cf6` (bouton « Modifier », lien actif) | 3,9:1 | **Non** |
-| Texte rouge `#ef4444` (bouton « Supprimer ») | 4,4:1 | **Non** |
-| Texte blanc sur badge de genre violet `#8b5cf6` (galerie) | 4,2:1 | **Non** |
+| Texte violet `#a78bfa` (bouton « Modifier », lien actif) | 6,0:1 | Oui |
+| Texte rouge `#f87171` (bouton « Supprimer ») | 5,9:1 | Oui |
+| Texte blanc sur badge de genre (violet à 25 %) | 12,1:1 | Oui |
 
-Les trois combinaisons non conformes restent à corriger.
+Avant le 19 novembre, trois combinaisons n'étaient pas conformes : texte violet
+`#8b5cf6` (3,9:1), texte rouge `#ef4444` (4,4:1) et badge de genre en violet plein
+(4,2:1). Sur les autres fonds du site, le minimum est de 5,8:1 pour `#a78bfa` et de
+5,75:1 pour `#f87171`.
 
 ---
 
@@ -167,7 +176,7 @@ Icônes principales utilisées :
 - Background : `bg-dark border-secondary` (fond `#1e1e2e`, bordure `#6c757d`)
 - Image : hauteur fixe 280px dans la galerie, 220px dans l'espace utilisateur, `object-fit: cover`
 - Hover : translation Y -4px + ombre portée (transition 0.2s)
-- Badge genre : `bg-primary bg-opacity-25` dans le template, affiché en violet plein `#8b5cf6` car la surcharge de `.bg-primary` dans `app.css` ignore l'opacité
+- Badge genre : `bg-primary bg-opacity-25`, violet à 25 % d'opacité, texte blanc
 
 ### Boutons
 
@@ -175,13 +184,13 @@ Icônes principales utilisées :
 |---|---|---|---|
 | Primaire | `btn-primary` | Fond `#7c3aed`, texte blanc | Actions principales (Filtrer, Créer un personnage) |
 | Hero | `btn-hero` | Dégradé `#7c3aed` → `#6d28d9` | Appels à l'action de l'accueil |
-| Hero contour | `btn-hero-outline` | Contour et texte `#8b5cf6` | Action secondaire de l'accueil |
-| Contour violet | `btn-outline-primary` | `#8b5cf6` | Modifier |
+| Hero contour | `btn-hero-outline` | Contour `#8b5cf6`, texte `#a78bfa` | Action secondaire de l'accueil |
+| Contour violet | `btn-outline-primary` | Texte `#a78bfa`, bordure `#8b5cf6` | Modifier |
 | Contour gris | `btn-outline-secondary` | `#9ca3af` | Rendre privé, réinitialiser les filtres |
 | Contour info | `btn-outline-info` | `#0dcaf0` | Équipement |
 | Contour jaune | `btn-outline-warning` | `#eab308` | Dupliquer |
 | Succès | `btn-success` / `btn-outline-success` | `#22c55e` | Approbations, Partager |
-| Danger | `btn-danger` / `btn-outline-danger` | `#ef4444` | Suppressions |
+| Danger | `btn-danger` / `btn-outline-danger` | Fond et bordure `#ef4444`, texte du contour `#f87171` | Suppressions |
 
 ### Formulaires
 
@@ -229,3 +238,7 @@ wireframe et en mockup.
 Les 12 écrans ont été exportés du canevas en images PNG le 18 novembre 2026,
 dans [`docs/maquettes/`](maquettes/), à leur taille réelle. La version PDF de la
 charte (`docs/charte-graphique.pdf`) les reproduit en annexe.
+
+Les nuances de texte adoptées le 19 novembre (`#a78bfa`, `#f87171`) et le badge
+de genre à 25 % d'opacité ne sont pas reportés dans les mockups, qui gardent les
+couleurs du 17 novembre.
