@@ -876,8 +876,10 @@ header.sticky-top {
 }
 
 .toast {
-    min-width: 350px;
-    max-width: 500px;
+    /* Jamais plus large que l'écran moins les marges du conteneur (2 × 1rem) :
+       un pourcentage ne marche pas ici, le conteneur prend la largeur du toast */
+    min-width: min(350px, calc(100vw - 2rem));
+    max-width: min(500px, calc(100vw - 2rem));
     backdrop-filter: blur(10px);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     border-radius: 12px;
