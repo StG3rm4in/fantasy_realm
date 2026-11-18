@@ -302,7 +302,7 @@ fantasy_realm/
 
 | Livrable | Lien |
 |---|---|
-| Application déployée | `[À COMPLÉTER — ex. https://fantasyrealm.app]` |
-| Dépôt GitHub public | `[À COMPLÉTER — ex. https://github.com/user/fantasy_realm]` |
-| Outil de gestion de projet | `[À COMPLÉTER — ex. https://trello.com/b/...] ` |
+| Application déployée | https://fantasyrealm.app |
+| Dépôt GitHub public | https://github.com/StG3rm4in/fantasy_realm |
+| Outil de gestion de projet (Trello) | https://trello.com/b/y8GYJcye/fantasyrealm-ecf-d%C3%A9veloppeur-web-et-web-mobile |
 | Documentation (`docs/`) | Voir dossier [`docs/`](docs/) à la racine du projet |
