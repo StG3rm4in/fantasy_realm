@@ -416,7 +416,7 @@ class EspaceEmployeController extends AbstractController
                     'isEdit' => false,
                     'nom' => $nom,
                     'type' => $type,
-                ]);
+                ], new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY));
             }
 
             if (!in_array($type, $allowedTypes, true)) {
@@ -426,7 +426,7 @@ class EspaceEmployeController extends AbstractController
                     'isEdit' => false,
                     'nom' => $nom,
                     'type' => $type,
-                ]);
+                ], new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY));
             }
 
             $article = new Article();
@@ -495,7 +495,7 @@ class EspaceEmployeController extends AbstractController
                     'isEdit' => true,
                     'nom' => $nom,
                     'type' => $type,
-                ]);
+                ], new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY));
             }
 
             if (!in_array($type, $allowedTypes, true)) {
@@ -505,7 +505,7 @@ class EspaceEmployeController extends AbstractController
                     'isEdit' => true,
                     'nom' => $nom,
                     'type' => $type,
-                ]);
+                ], new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY));
             }
 
             $article->setNom($nom);

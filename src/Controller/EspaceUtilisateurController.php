@@ -79,7 +79,7 @@ class EspaceUtilisateurController extends AbstractController
                 $this->addFlash('error', 'Un personnage avec ce nom existe déjà. Veuillez choisir un autre nom.');
                 return $this->render('espace_utilisateur/personnage_create.html.twig', [
                     'form' => $form,
-                ]);
+                ], new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY));
             }
 
             // Fallback : generation serveur si pas d'image client

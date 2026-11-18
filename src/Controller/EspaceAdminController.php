@@ -187,7 +187,7 @@ class EspaceAdminController extends AbstractController
                     'isEdit' => false,
                     'pseudo' => $pseudo,
                     'email' => $email,
-                ]);
+                ], new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY));
             }
 
             // Récupérer le rôle 'employe'
@@ -216,7 +216,7 @@ class EspaceAdminController extends AbstractController
                     'isEdit' => false,
                     'pseudo' => $pseudo,
                     'email' => $email,
-                ]);
+                ], new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY));
             }
 
             $em->persist($user);
@@ -328,7 +328,7 @@ class EspaceAdminController extends AbstractController
                     'user' => $user,
                     'pseudo' => $pseudo,
                     'email' => $email,
-                ]);
+                ], new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY));
             }
 
             $user->setPseudo($pseudo);
@@ -351,7 +351,7 @@ class EspaceAdminController extends AbstractController
                     'user' => $user,
                     'pseudo' => $pseudo,
                     'email' => $email,
-                ]);
+                ], new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY));
             }
 
             $em->flush();
