@@ -49,7 +49,7 @@ main {
 .btn-hero-outline {
     background: transparent;
     border: 2px solid var(--primary-color);
-    color: var(--primary-color);
+    color: var(--primary-text);
     padding: 0.75rem 2rem;
     font-weight: 600;
     transition: all 0.3s ease;
@@ -84,7 +84,7 @@ main {
 }
 
 .nav-link:hover {
-    color: var(--primary-color) !important;
+    color: var(--primary-text) !important;
 }
 
 /* ===== Hero Section ===== */
@@ -122,7 +122,7 @@ main {
 .badge-primary {
     background: rgba(139, 92, 246, 0.1);
     border: 1px solid rgba(139, 92, 246, 0.3);
-    color: var(--primary-color);
+    color: var(--primary-text);
 }
 
 /* ===== Animations ===== */
@@ -154,7 +154,7 @@ main {
 }
 
 .footer a:hover {
-    color: var(--primary-color);
+    color: var(--primary-text);
 }
 
 /* ===== Forms ===== */
@@ -166,11 +166,13 @@ main {
 
 /* ===== Bootstrap Overrides ===== */
 .text-primary {
-    color: var(--primary-color) !important;
+    color: var(--primary-text) !important;
 }
 
+/* Respecte bg-opacity-* (avant : couleur pleine, le badge de genre était blanc sur
+   violet à 4,2:1 ; à 25 % d'opacité, le texte blanc atteint 12,1:1) */
 .bg-primary {
-    background-color: var(--primary-color) !important;
+    background-color: rgba(139, 92, 246, var(--bs-bg-opacity, 1)) !important;
 }
 
 .border-primary {
@@ -190,7 +192,12 @@ main {
     --danger-color: #ef4444;
     --warning-color: #eab308;
     --text-secondary-color: #9ca3af;
-    --text-on-color: #0f0f23; /* texte foncé sur les couleurs vives */
+    --text-on-color: #0f0f23;
+    /* Nuances réservées au TEXTE (RGAA 3.2, 4,5:1 minimum) : #8b5cf6 n'atteint que
+       3,75 à 4,46:1 et #ef4444 4,22 à 5,01:1 selon le fond. Les fonds et les bordures
+       gardent les couleurs de la charte (3:1 suffisent pour une bordure). */
+    --primary-text: #a78bfa; /* 5,84:1 au minimum sur les fonds du site */
+    --danger-text: #f87171;  /* 5,75:1 au minimum */ /* texte foncé sur les couleurs vives */
     /* Boutons violets à texte blanc : #7c3aed (5,7:1) plutôt que #8b5cf6
        (4,2:1, sous le seuil de 4,5:1 du RGAA). Survol : #6d28d9 (7,1:1). */
     --button-color: #7c3aed;
@@ -213,6 +220,10 @@ main {
     color: var(--text-secondary-color) !important;
 }
 
+.text-danger {
+    color: var(--danger-text) !important;
+}
+
 /* Badges pleins vert et rouge : texte foncé, le blanc n'y atteint
    que 2,3:1 (vert) et 3,8:1 (rouge). */
 .badge.bg-success,
@@ -233,7 +244,7 @@ main {
 }
 
 .btn-outline-primary {
-    --bs-btn-color: var(--primary-color);
+    --bs-btn-color: var(--primary-text);
     --bs-btn-border-color: var(--primary-color);
     --bs-btn-hover-color: #fff;
     --bs-btn-hover-bg: var(--button-color);
@@ -241,7 +252,7 @@ main {
     --bs-btn-active-color: #fff;
     --bs-btn-active-bg: var(--button-hover);
     --bs-btn-active-border-color: var(--button-hover);
-    --bs-btn-disabled-color: var(--primary-color);
+    --bs-btn-disabled-color: var(--primary-text);
     --bs-btn-disabled-border-color: var(--primary-color);
     --bs-btn-focus-shadow-rgb: 139, 92, 246;
 }
@@ -304,7 +315,7 @@ main {
 }
 
 .btn-outline-danger {
-    --bs-btn-color: var(--danger-color);
+    --bs-btn-color: var(--danger-text);
     --bs-btn-border-color: var(--danger-color);
     --bs-btn-hover-color: var(--text-on-color);
     --bs-btn-hover-bg: var(--danger-color);
@@ -563,12 +574,12 @@ header.sticky-top {
 }
 
 .nav-tabs .nav-link:hover {
-    color: var(--primary-color);
+    color: var(--primary-text);
     border-bottom-color: rgba(139, 92, 246, 0.5);
 }
 
 .nav-tabs .nav-link.active {
-    color: var(--primary-color);
+    color: var(--primary-text);
     background-color: transparent;
     border-bottom-color: var(--primary-color);
 }
