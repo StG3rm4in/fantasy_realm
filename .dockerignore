@@ -5,3 +5,5 @@ node_modules/
 .env.*.local
 # Secrets de production : transmis par docker-compose.prod.yml, jamais copies dans l'image
 .env.prod
+# Certificat HTTPS (clé privée) : réservé à Nginx, jamais copié dans l image PHP
+ssl/
