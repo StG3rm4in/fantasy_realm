@@ -29,3 +29,6 @@
 /docs/copie-ecf-reponses.md
 # En cours de réécriture, versionné une fois à jour
 /docs/gestion-de-projet.md
+
+# Configuration locale de PhpStorm
+/.idea/
