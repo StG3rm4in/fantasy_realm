@@ -1,8 +1,8 @@
 # Documentation technique — FantasyRealm Online
 
-**Projet :** FantasyRealm Online — Application de gestion de personnages MMORPG
-**Client :** PixelVerse Studios
-**Version :** 1.0 — ECF Studi 2026
+**Projet :** FantasyRealm Online — Application de gestion de personnages MMORPG\
+**Client :** PixelVerse Studios\
+**Version :** 1.1 — 18 novembre 2026 (relue et corrigée d'après le code et le serveur)
 
 ---
 
@@ -48,20 +48,20 @@ MongoDB a été utilisé exclusivement pour les **logs d'activité** :
 
 ## 2. Configuration de l'environnement
 
-### Environnement de développement local (XAMPP)
+### Poste de développement
 
-| Service | Version | URL/Port |
-|---|---|---|
-| PHP | 8.4 | Ligne de commande |
-| MySQL | 8.0 | localhost:3306 |
-| Application | Symfony CLI | http://localhost |
-
-Configuration : fichier `.env` (committé, valeurs dev par défaut)
+- **Windows 11**, projet dans `C:\xampp\htdocs\fantasy_realm`. XAMPP n'est
+  pas utilisé pour faire tourner l'application : tout passe par Docker.
+- **Docker Desktop** : PHP, Nginx, MySQL, MongoDB et Mailpit en conteneurs.
+- **PhpStorm** (licence du GitHub Student Developer Pack).
+- **Git**, dépôt hébergé sur **GitHub** ; workflow `main` / `dev` / une
+  branche par modification (voir la documentation de gestion de projet).
 
 ### Environnement de développement Docker
 
 ```
-docker-compose up -d --build
+docker compose up -d --build
+docker compose exec php composer install
 ```
 
 | Service | Image | Port hôte |
@@ -71,7 +71,9 @@ docker-compose up -d --build
 | MongoDB | mongo:latest | localhost:27019 |
 | Mailpit (emails test) | axllent/mailpit | http://localhost:8026 |
 
-Configuration : `.env` (base) + `.env.local` (surcharges Docker, non committé)
+Configuration : `.env` (versionné, valeurs par défaut sans secret) + `.env.local`
+(surcharges locales, non versionné). En local, le code est monté en volume :
+une modification est visible sans reconstruire l'image.
 
 ### Environnement de production
 
@@ -81,11 +83,15 @@ docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
 
 Différences par rapport au dev :
 - Code source **copié dans l'image** (pas de volume de code)
-- `APP_ENV=prod` → cache compilé, logs réduits
+- `APP_ENV=prod` → cache compilé, erreurs journalisées et jamais affichées (`php.ini-production`)
 - MongoDB avec **authentification obligatoire**
 - Ports MySQL/MongoDB **non exposés** à l'extérieur
 - HTTPS via Let's Encrypt (Certbot)
-- Assets compilés automatiquement via entrypoint.sh
+- Assets compilés pendant la construction de l'image, puis copiés par
+  `entrypoint.sh` dans un volume partagé avec Nginx
+- Secrets dans `.env.prod`, sur le serveur seulement (exclu de l'image)
+
+Le serveur et la procédure de mise en production sont décrits à la section 8.
 
 ---
 
@@ -128,7 +134,8 @@ erDiagram
     commentaire {
         int id_commentaire PK
         int note
-        text commentaire
+        varchar commentaire
+        date date_commentaire
         varchar statut
         int id_personnage FK
         int id_utilisateur FK
@@ -156,6 +163,9 @@ erDiagram
 
 ### Contraintes notables
 
+- `utilisateur.pseudo` et `utilisateur.mail` : `UNIQUE` (le mail est enregistré en minuscules)
+- `personnage.nom` : `UNIQUE`
+- `commentaire.note` : entre 1 et 5 (CHECK en base) ; `commentaire.commentaire` : 500 caractères
 - `utilisateur.suspendu` : booléen — compte bloqué si `TRUE`
 - `utilisateur.motdepasse_a_modifier` : force le changement au prochain login
 - `personnage.autorise` : tri-état — `NULL` = en attente, `TRUE` = approuvé, `FALSE` = rejeté (supprimé)
@@ -180,8 +190,10 @@ graph TD
     PUB --> C[Envoyer un message de contact]
     PUB --> D[S'inscrire]
     PUB --> E[Se connecter]
+    PUB --> E2[Recevoir un mot de passe temporaire]
 
     USR --> F[Créer un personnage]
+    USR --> F2[Supprimer un personnage]
     USR --> G[Modifier son personnage]
     USR --> H[Dupliquer un personnage]
     USR --> I[Partager / rendre privé]
@@ -189,7 +201,7 @@ graph TD
     USR --> K[Noter et commenter]
     USR --> L[Supprimer son compte RGPD]
 
-    EMP --> M[Modérer les personnages]
+    EMP --> M[Modérer et supprimer les personnages]
     EMP --> N[Modérer les avis]
     EMP --> O[Gérer les articles]
     EMP --> P[Gérer les utilisateurs]
@@ -207,41 +219,51 @@ graph TD
 ```mermaid
 sequenceDiagram
     actor Utilisateur
+    participant Navigateur
     participant Symfony
     participant MySQL
-    actor Employé
+    participant MongoDB
     participant Mailer
+    actor Employé
 
-    Utilisateur->>Symfony: POST /espace-utilisateur/personnage/nouveau
-    Symfony->>Symfony: Validation formulaire (CSRF, champs requis)
-    Symfony->>MySQL: INSERT INTO personnage (autorise=NULL, partage=FALSE)
-    MySQL-->>Symfony: id_personnage
-    Symfony->>MySQL: INSERT log MongoDB (action=creation)
-    Symfony->>Symfony: Génère image SVG côté serveur
-    Symfony->>MySQL: UPDATE personnage SET image=...
-    Symfony-->>Utilisateur: Redirect /espace-utilisateur (flash "En attente")
+    Utilisateur->>Navigateur: Choisit nom, genre, traits, couleurs, visibilité
+    Navigateur->>Navigateur: Dessine l'aperçu (canvas) et le met en PNG base64 dans un champ caché
+    Navigateur->>Symfony: POST /espace-utilisateur/personnage/nouveau (formulaire + image)
+    Symfony->>Symfony: Validation du formulaire (CSRF, champs requis), autorise = NULL
+    Symfony->>Symfony: Décode l'image (si absente : image de secours générée avec GD)
+    Symfony->>MySQL: INSERT INTO personnage
+    alt Nom déjà utilisé (UNIQUE)
+        MySQL-->>Symfony: Erreur de contrainte
+        Symfony-->>Utilisateur: Formulaire réaffiché avec un message
+    else Nom libre
+        MySQL-->>Symfony: id_personnage
+        Symfony->>MongoDB: insertOne (action = creation)
+        Symfony-->>Utilisateur: Redirection /espace-utilisateur (message de confirmation)
+    end
 
     Note over Employé,Symfony: File de modération
 
-    Employé->>Symfony: GET /espace-employe (liste personnages en attente)
+    Employé->>Symfony: GET /espace-employe
     Symfony->>MySQL: SELECT personnage WHERE autorise IS NULL
-    MySQL-->>Symfony: liste personnages
-    Symfony-->>Employé: Affiche file de modération
+    MySQL-->>Symfony: Personnages en attente
+    Symfony-->>Employé: Onglet « Personnages »
 
     alt Approbation
-        Employé->>Symfony: POST /espace-employe/personnage/{id}/approuver
-        Symfony->>MySQL: UPDATE personnage SET autorise=TRUE
-        Symfony->>Mailer: Envoi email "Personnage approuvé"
-        Mailer-->>Utilisateur: Email de confirmation
-        Symfony-->>Employé: Redirect (flash "Approuvé")
+        Employé->>Symfony: POST /espace-employe/personnages/{id}/approuver (CSRF)
+        Symfony->>MySQL: UPDATE personnage SET autorise = TRUE
+        Symfony->>Mailer: Mail « personnage approuvé » au propriétaire
+        Symfony->>MongoDB: insertOne (action = moderation_approbation)
+        Symfony-->>Employé: Redirection (message « approuvé »)
     else Rejet
-        Employé->>Symfony: POST /espace-employe/personnage/{id}/rejeter (motif)
-        Symfony->>Mailer: Envoi email "Personnage rejeté" avec motif
-        Mailer-->>Utilisateur: Email avec motif de rejet
-        Symfony->>MySQL: DELETE personnage WHERE id=...
-        Symfony-->>Employé: Redirect (flash "Rejeté")
+        Employé->>Symfony: POST /espace-employe/personnages/{id}/rejeter (CSRF, motif obligatoire)
+        Symfony->>Mailer: Mail « personnage rejeté » avec le motif
+        Symfony->>MongoDB: insertOne (action = moderation_rejet)
+        Symfony->>MySQL: DELETE personnage (définitif)
+        Symfony-->>Employé: Redirection (message « rejeté »)
     end
 ```
+
+Un employé ne peut ni approuver ni rejeter un personnage qui lui appartient.
 
 ---
 
@@ -256,21 +278,24 @@ sequenceDiagram
     participant AuthSuccessHandler
     participant MySQL
 
-    Utilisateur->>Symfony Security: POST /connexion (email, password, _csrf_token)
-    Symfony Security->>Symfony Security: Validation token CSRF
-    Symfony Security->>UserProvider: loadUserByIdentifier(email)
-    UserProvider->>MySQL: SELECT utilisateur WHERE mail=?
-    MySQL-->>UserProvider: Objet User
+    Utilisateur->>Symfony Security: POST /connexion (_username, _password, _csrf_token)
+    Symfony Security->>Symfony Security: Validation du jeton CSRF
+    Symfony Security->>UserProvider: loadUserByIdentifier(identifiant)
+    UserProvider->>MySQL: SELECT utilisateur WHERE mail = ? (sinon WHERE pseudo = ?)
+    MySQL-->>UserProvider: Utilisateur
     UserProvider-->>Symfony Security: User
 
-    Symfony Security->>Symfony Security: Vérification password (bcrypt)
-
-    Symfony Security->>UserChecker: checkPreAuth(user)
+    Symfony Security->>UserChecker: checkPreAuth(user), avant le mot de passe
     alt Compte suspendu
         UserChecker-->>Symfony Security: CustomUserMessageAccountStatusException
-        Symfony Security-->>Utilisateur: Erreur "Compte suspendu"
+        Symfony Security-->>Utilisateur: Erreur « compte suspendu »
     else Compte actif
         UserChecker-->>Symfony Security: OK
+    end
+
+    Symfony Security->>Symfony Security: password_verify (bcrypt)
+    alt Mot de passe faux
+        Symfony Security-->>Utilisateur: Retour à /connexion avec une erreur
     end
 
     Symfony Security->>AuthSuccessHandler: onAuthenticationSuccess(request, token)
@@ -295,29 +320,82 @@ sequenceDiagram
 |---|---|---|
 | `MailService` | `src/Service/MailService.php` | 5 types d'emails : contact, mot de passe oublié, personnage approuvé/rejeté, avis approuvé |
 | `MongoLogService` | `src/Service/MongoLogService.php` | Écriture et lecture des logs dans MongoDB |
-| `SvgPersonnageRenderer` | `src/Service/SvgPersonnageRenderer.php` | Génération SVG côté serveur (miroir PHP de `PersonnageRenderer.js`) |
-| `PersonnageImageGenerator` | `src/Service/PersonnageImageGenerator.php` | Fallback GD pour la génération d'images PNG |
+| `SvgPersonnageRenderer` | `src/Service/SvgPersonnageRenderer.php` | Portrait SVG côté serveur (équivalent PHP du dessin JavaScript), utilisé par la commande `app:generate-personnage-images` que `entrypoint.sh` lance au démarrage pour les personnages sans image |
+| `PersonnageImageGenerator` | `src/Service/PersonnageImageGenerator.php` | Image PNG de secours (GD) quand le navigateur n'a pas envoyé d'image |
+
+L'image normale d'un personnage est dessinée **dans le navigateur** (canvas),
+puis envoyée en base64 avec le formulaire.
 
 ### Composants de sécurité
 
 | Composant | Fichier | Rôle |
 |---|---|---|
-| `UserProvider` | `src/Security/UserProvider.php` | Chargement utilisateur depuis MySQL (colonnes françaises) |
-| `UserChecker` | `src/Security/UserChecker.php` | Vérification suspension avant connexion |
+| `UserProvider` | `src/Security/UserProvider.php` | Chargement de l'utilisateur depuis MySQL, par mail ou par pseudo |
+| `UserChecker` | `src/Security/UserChecker.php` | Refus de la connexion d'un compte suspendu (avant la vérification du mot de passe) |
 | `AuthenticationSuccessHandler` | `src/Security/AuthenticationSuccessHandler.php` | Redirection post-login selon rôle + mot de passe à modifier |
 
 ---
 
 ## 8. Déploiement
 
-Voir le fichier **`README.md`** à la racine pour les instructions complètes de déploiement local et production.
+Les commandes pas à pas (local et production) sont dans le **`README.md`**.
+Cette section décrit l'installation réellement en service.
 
-Fichiers de configuration clés :
+### Serveur
+
+| Élément | Valeur |
+|---|---|
+| Hébergeur | DigitalOcean, centre de données d'Amsterdam |
+| Machine | 1 processeur, 1 Go de RAM + 2 Go de mémoire d'appoint (swap) |
+| Système | Debian 13, Docker 29, Docker Compose v5 |
+| Domaine | `fantasyrealm.app` (HTTPS obligatoire pour ce domaine) |
+| Accès | SSH par clé |
+
+La mémoire d'appoint a été ajoutée en novembre 2026 : avec 1 Go seulement,
+Linux avait arrêté MySQL faute de mémoire.
+
+### Architecture de production
+
+```mermaid
+graph LR
+    V([Visiteur]) -- HTTPS 443 --> N[nginx]
+    N -- FastCGI --> P[php : PHP-FPM 8.4, code dans l'image]
+    P --> M[(mysql 8.0)]
+    P --> G[(mongodb)]
+    P -- SMTP 2525 --> B[Brevo]
+```
+
+- **nginx** : HTTPS (certificat Let's Encrypt monté depuis `ssl/`), redirection
+  80 → 443, fichiers statiques et assets compilés (volume `assets_data`).
+- **php** : application Symfony en mode `prod` ; cache et logs dans le volume
+  `var_data`.
+- **mysql** : volume `mysql_data` ; au premier démarrage, `01-schema.sql` puis
+  `02-data.sql` créent les tables et le jeu d'essai.
+- **mongodb** : volume `mongo_data`, authentification obligatoire.
+- Ports MySQL et MongoDB non exposés hors du réseau Docker.
+- **Mails** : Brevo sur le port 2525, DigitalOcean bloquant 587 et 465.
+- **Certificat** : renouvelé par `certbot.timer` ; trois scripts libèrent le
+  port 80, copient le nouveau certificat et relancent Nginx.
+
+### Procédure de mise à jour appliquée
+
+1. Archive de la branche `main` (`git archive`) envoyée sur le serveur ; les
+   fichiers modifiés sont comparés à la version en ligne avant d'être remplacés.
+2. Sauvegarde de la base MySQL (`mysqldump`).
+3. Image PHP en service conservée sous une étiquette, pour revenir en arrière.
+4. Construction de la nouvelle image : le site reste en ligne.
+5. Bascule de `php` et `nginx`, puis `cache:clear` (le cache vit dans un volume).
+6. Contrôle automatique du contenu des pages ; en cas d'échec, retour à
+   l'image conservée. Coupure constatée : 12 à 16 secondes.
+
+### Fichiers de configuration
+
 - `docker-compose.yml` — Environnement de développement
 - `docker-compose.prod.yml` — Environnement de production
-- `docker/php/Dockerfile` — Image PHP 8.4-FPM avec extensions
-- `docker/php/entrypoint.sh` — Script de démarrage (copie assets, génère images)
+- `docker/php/Dockerfile` — Image PHP 8.4-FPM avec extensions (MongoDB avec SSL, GD…)
+- `docker/php/entrypoint.sh` — Démarrage : copie des assets compilés pour Nginx, génération des images manquantes
 - `docker/nginx/default.conf` — Nginx développement
 - `docker/nginx/prod.conf` — Nginx production (HTTPS, TLS 1.2/1.3)
+- `.dockerignore` — Exclut de l'image `.env.prod` et `ssl/`
 - `database/01-schema.sql` — Schéma complet de la base de données
 - `database/02-data.sql` — Données initiales (rôles, comptes, articles)
