@@ -161,11 +161,16 @@ class EspaceEmployeController extends AbstractController
         // Envoyer l'email de notification au propriétaire
         $owner = $personnage->getUtilisateur();
         if ($owner !== null) {
-            $this->mailService->sendPersonnageApproved(
-                $owner->getEmail(),
-                $owner->getPseudo(),
-                $personnage->getNom()
-            );
+            // Un échec d'envoi (quota, SMTP indisponible) ne doit pas annuler l'action
+            try {
+                $this->mailService->sendPersonnageApproved(
+                    $owner->getEmail(),
+                    $owner->getPseudo(),
+                    $personnage->getNom()
+                );
+            } catch (\Throwable $e) {
+                $this->addFlash('warning', 'Action effectuée, mais le mail au propriétaire n\'a pas pu être envoyé.');
+            }
         }
 
         // Log dans MongoDB
@@ -225,12 +230,17 @@ class EspaceEmployeController extends AbstractController
 
         // Envoyer l'email de rejet au propriétaire AVANT la suppression
         if ($owner !== null) {
-            $this->mailService->sendPersonnageRejected(
-                $owner->getEmail(),
-                $owner->getPseudo(),
-                $nomPersonnage,
-                $reason
-            );
+            // Un échec d'envoi (quota, SMTP indisponible) ne doit pas annuler l'action
+            try {
+                $this->mailService->sendPersonnageRejected(
+                    $owner->getEmail(),
+                    $owner->getPseudo(),
+                    $nomPersonnage,
+                    $reason
+                );
+            } catch (\Throwable $e) {
+                $this->addFlash('warning', 'Action effectuée, mais le mail au propriétaire n\'a pas pu être envoyé.');
+            }
         }
 
         // Log dans MongoDB avant suppression
@@ -328,11 +338,16 @@ class EspaceEmployeController extends AbstractController
         if ($personnage !== null) {
             $owner = $personnage->getUtilisateur();
             if ($owner !== null) {
-                $this->mailService->sendCommentaireApproved(
-                    $owner->getEmail(),
-                    $owner->getPseudo(),
-                    $personnage->getNom()
-                );
+                // Un échec d'envoi (quota, SMTP indisponible) ne doit pas annuler l'action
+                try {
+                    $this->mailService->sendCommentaireApproved(
+                        $owner->getEmail(),
+                        $owner->getPseudo(),
+                        $personnage->getNom()
+                    );
+                } catch (\Throwable $e) {
+                    $this->addFlash('warning', 'Action effectuée, mais le mail au propriétaire n\'a pas pu être envoyé.');
+                }
             }
         }
 
