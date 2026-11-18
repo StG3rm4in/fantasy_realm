@@ -106,7 +106,7 @@ MAILER_DSN=smtp://utilisateur:mot_de_passe@smtp.votre-fournisseur.com:587
 
 > **Règles pour ces mots de passe de service :** au moins 32 caractères, uniquement
 > des lettres et des chiffres. Ils sont insérés dans `DATABASE_URL` et `MONGODB_URL`
-> (`docker-compose.prod.yml`), où `@`, `:`, `/`, `#`, `?` ou `%` cassent l'URL, et
+> (`docker-compose.prod.yml`), où `@`, `:`, `/`, `#`, `?` ou `%` risquent de casser l'URL, et
 > Docker Compose interprète `$`. La longueur remplace les caractères spéciaux.
 > Pour en générer un : `openssl rand -base64 48 | tr -dc 'A-Za-z0-9' | head -c 32`
 
