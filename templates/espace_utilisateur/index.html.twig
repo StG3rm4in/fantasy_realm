@@ -21,7 +21,7 @@
                 Créer un personnage
             </a>
             {% if not is_granted('ROLE_ADMIN') %}
-            <button type="button" class="btn btn-outline-danger d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+            <button type="button" class="btn btn-outline-danger d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#deleteAccountModal" aria-label="Supprimer mon compte">
                 <i class="bi bi-person-x" aria-hidden="true"></i>
                 <span class="d-none d-sm-inline">Supprimer mon compte</span>
             </button>
