@@ -1,8 +1,8 @@
 # Charte graphique — FantasyRealm Online
 
-**Projet :** FantasyRealm Online — Application de gestion de personnages MMORPG
-**Client :** PixelVerse Studios
-**Version :** 1.1 — 17 novembre 2026 (couleurs du site alignées sur la charte, contrastes RGAA, maquettes)
+**Projet :** FantasyRealm Online — Application de gestion de personnages MMORPG\
+**Client :** PixelVerse Studios\
+**Version :** 1.2 — 18 novembre 2026 (couleurs du site alignées sur la charte, contrastes RGAA, maquettes exportées)
 
 ---
 
@@ -217,15 +217,15 @@ wireframe et en mockup.
 
 | Page | Desktop (1440 px) | Mobile (390 px) |
 |---|---|---|
-| Accueil (`/`) | Wireframe + mockup | Wireframe + mockup |
-| Galerie des personnages (`/personnages`) | Wireframe + mockup | Wireframe + mockup |
-| Espace utilisateur (`/espace-utilisateur`) | Wireframe + mockup | Wireframe + mockup |
+| Accueil (`/`) | [wireframe](maquettes/wireframe-accueil-desktop.png) · [mockup](maquettes/mockup-accueil-desktop.png) | [wireframe](maquettes/wireframe-accueil-mobile.png) · [mockup](maquettes/mockup-accueil-mobile.png) |
+| Galerie des personnages (`/personnages`) | [wireframe](maquettes/wireframe-galerie-desktop.png) · [mockup](maquettes/mockup-galerie-desktop.png) | [wireframe](maquettes/wireframe-galerie-mobile.png) · [mockup](maquettes/mockup-galerie-mobile.png) |
+| Espace utilisateur (`/espace-utilisateur`) | [wireframe](maquettes/wireframe-espace-utilisateur-desktop.png) · [mockup](maquettes/mockup-espace-utilisateur-desktop.png) | [wireframe](maquettes/wireframe-espace-utilisateur-mobile.png) · [mockup](maquettes/mockup-espace-utilisateur-mobile.png) |
 
 - **Wireframes :** niveaux de gris, blocs et barres à la place des paragraphes.
 - **Mockups :** couleurs du site, vrais textes, portraits générés par
   l'application, données du jeu d'essai (compte `chevalier_noir`, personnages
   Thorin, Elyndra, Zephyr et Gareth, ce dernier en attente de validation).
 
-> **→ Fichiers exportés : `docs/maquettes/` (export à faire après ma relecture).**
-
-> À compléter après ma relecture : ce que j'ai corrigé dans les maquettes.
+Les 12 écrans ont été exportés du canevas en images PNG le 18 novembre 2026,
+dans [`docs/maquettes/`](maquettes/), à leur taille réelle. La version PDF de la
+charte (`docs/charte-graphique.pdf`) les reproduit en annexe.
