@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ personnage.nom }} - Moderation - FantasyRealm Online{% endblock %}
+{% block title %}{{ personnage.nom }} - Modération - FantasyRealm Online{% endblock %}
 
 {% block body %}
 <div class="container py-5">
@@ -40,29 +40,29 @@
                         {% if personnage.autorise is null %}
                             <span class="badge bg-warning text-dark fs-6">
                                 <i class="bi bi-hourglass-split me-1" aria-hidden="true"></i>
-                                En attente de moderation
+                                En attente de modération
                             </span>
                         {% elseif personnage.autorise %}
                             <span class="badge bg-success fs-6">
                                 <i class="bi bi-check-circle me-1" aria-hidden="true"></i>
-                                Approuve
+                                Approuvé
                             </span>
                         {% else %}
                             <span class="badge bg-danger fs-6">
                                 <i class="bi bi-x-circle me-1" aria-hidden="true"></i>
-                                Rejete
+                                Rejeté
                             </span>
                         {% endif %}
 
                         {% if personnage.partage %}
                             <span class="badge bg-info bg-opacity-25 text-info fs-6 ms-1">
                                 <i class="bi bi-globe me-1" aria-hidden="true"></i>
-                                Partage
+                                Partagé
                             </span>
                         {% else %}
                             <span class="badge bg-secondary bg-opacity-25 text-secondary fs-6 ms-1">
                                 <i class="bi bi-lock me-1" aria-hidden="true"></i>
-                                Prive
+                                Privé
                             </span>
                         {% endif %}
                     </div>
@@ -97,7 +97,7 @@
                     <div class="pt-4 border-top border-secondary">
                         <h4 class="h6 mb-3">
                             <i class="bi bi-person-badge text-primary me-2" aria-hidden="true"></i>
-                            Informations du createur
+                            Informations du créateur
                         </h4>
                         <p class="text-secondary small mb-1">Pseudo</p>
                         <p class="fw-semibold mb-2">{{ personnage.utilisateur.pseudo }}</p>
@@ -177,7 +177,7 @@
                 <div class="card-body p-4">
                     <h3 class="mb-4">
                         <i class="bi bi-bag text-primary me-2" aria-hidden="true"></i>
-                        Articles equipes
+                        Articles équipés
                     </h3>
 
                     {% if personnage.articles is defined and personnage.articles|length > 0 %}
@@ -215,7 +215,7 @@
                     {% else %}
                         <div class="text-center py-4 text-secondary">
                             <i class="bi bi-bag-x display-4" aria-hidden="true"></i>
-                            <p class="mt-3 mb-0">Aucun article equipe</p>
+                            <p class="mt-3 mb-0">Aucun article équipé</p>
                         </div>
                     {% endif %}
                 </div>
@@ -276,18 +276,18 @@
                     <input type="hidden" name="_token" value="{{ csrf_token('delete-personnage-' ~ personnage.id) }}">
                     <div class="alert alert-danger d-flex align-items-start gap-2" role="alert">
                         <i class="bi bi-exclamation-triangle-fill mt-1" aria-hidden="true"></i>
-                        <strong>Action irreversible !</strong>
+                        <strong>Action irréversible !</strong>
                     </div>
                     <p>Êtes-vous sûr de vouloir supprimer définitivement le personnage <strong class="text-danger">{{ personnage.nom }}</strong> ?</p>
                     <p class="text-secondary small mb-0">
                         <i class="bi bi-info-circle me-1" aria-hidden="true"></i>
-                        Le personnage et toutes ses donnees associees seront supprimes de maniere permanente.
+                        Le personnage et toutes ses données associées seront supprimés de manière permanente.
                     </p>
                 </div>
                 <div class="modal-footer border-secondary">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
                     <button type="submit" class="btn btn-danger">
-                        <i class="bi bi-trash me-1" aria-hidden="true"></i> Supprimer definitivement
+                        <i class="bi bi-trash me-1" aria-hidden="true"></i> Supprimer définitivement
                     </button>
                 </div>
             </form>
