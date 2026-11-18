@@ -145,7 +145,8 @@ class PersonnageController extends AbstractController
             'commentaires' => $commentairesApprouves,
             'commentaireForm' => $commentaireForm?->createView(),
             'userCommentaire' => $userCommentaire,
-        ]);
+        ], new Response(null, $commentaireForm?->isSubmitted() && !$commentaireForm->isValid()
+            ? Response::HTTP_UNPROCESSABLE_ENTITY : Response::HTTP_OK));
     }
 
     #[Route('/personnage/avis/{id}/modifier', name: 'app_avis_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
