@@ -46,7 +46,8 @@ class EspaceAdminController extends AbstractController
         $filterAction = $request->query->get('action');
         $filterDateDebut = $request->query->get('date_debut');
         $filterDateFin = $request->query->get('date_fin');
-        $page = max(1, (int) $request->query->get('page', 1));
+        // Page bornée : un numéro énorme provoquait une erreur 500
+        $page = min(max(1, (int) $request->query->get('page', 1)), 100000);
         $limit = 50;
         $offset = ($page - 1) * $limit;
 
@@ -160,6 +161,9 @@ class EspaceAdminController extends AbstractController
             } else {
                 if (strlen($password) < 12) {
                     $errors[] = 'Le mot de passe doit contenir au moins 12 caractères.';
+                }
+                if (strlen($password) > 4096) {
+                    $errors[] = 'Le mot de passe ne peut pas dépasser 4096 caractères.';
                 }
                 if (!preg_match('/[A-Z]/', $password)) {
                     $errors[] = 'Le mot de passe doit contenir au moins une majuscule.';
@@ -301,6 +305,9 @@ class EspaceAdminController extends AbstractController
             if ($newPassword !== '') {
                 if (strlen($newPassword) < 12) {
                     $errors[] = 'Le mot de passe doit contenir au moins 12 caractères.';
+                }
+                if (strlen($newPassword) > 4096) {
+                    $errors[] = 'Le mot de passe ne peut pas dépasser 4096 caractères.';
                 }
                 if (!preg_match('/[A-Z]/', $newPassword)) {
                     $errors[] = 'Le mot de passe doit contenir au moins une majuscule.';

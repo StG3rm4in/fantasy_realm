@@ -409,8 +409,8 @@ class EspaceEmployeController extends AbstractController
             $allowedTypes = ['vetement', 'armure', 'accessoire', 'arme'];
 
             // Validation
-            if ($nom === '') {
-                $this->addFlash('error', 'Le nom de l\'article est requis.');
+            if ($nom === '' || mb_strlen($nom) > 50) {
+                $this->addFlash('error', 'Le nom de l\'article est requis et ne doit pas dépasser 50 caractères.');
                 return $this->render('espace_employe/articles/form.html.twig', [
                     'article' => null,
                     'isEdit' => false,
@@ -488,8 +488,8 @@ class EspaceEmployeController extends AbstractController
             $allowedTypes = ['vetement', 'armure', 'accessoire', 'arme'];
 
             // Validation
-            if ($nom === '') {
-                $this->addFlash('error', 'Le nom de l\'article est requis.');
+            if ($nom === '' || mb_strlen($nom) > 50) {
+                $this->addFlash('error', 'Le nom de l\'article est requis et ne doit pas dépasser 50 caractères.');
                 return $this->render('espace_employe/articles/form.html.twig', [
                     'article' => $article,
                     'isEdit' => true,
