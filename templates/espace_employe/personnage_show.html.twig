@@ -69,6 +69,7 @@
 
                     {# Actions de moderation #}
                     <div class="d-grid gap-2 mb-4">
+                        {% if personnage.autorise is null %}
                         <form method="post" action="{{ path('app_employe_personnage_approve', {id: personnage.id}) }}">
                             <input type="hidden" name="_token" value="{{ csrf_token('approve-personnage-' ~ personnage.id) }}">
                             <button type="submit" class="btn btn-success btn-lg w-100"
@@ -83,6 +84,7 @@
                             <i class="bi bi-x-circle me-2" aria-hidden="true"></i>
                             Rejeter
                         </button>
+                        {% endif %}
 
                         <button type="button" class="btn btn-outline-danger w-100"
                                 data-bs-toggle="modal" data-bs-target="#deleteModal">
