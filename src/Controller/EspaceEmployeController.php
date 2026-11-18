@@ -147,6 +147,13 @@ class EspaceEmployeController extends AbstractController
             return $this->redirectToRoute('app_espace_employe');
         }
 
+        // Seul un personnage en attente peut être approuvé ou rejeté. Masquer les
+        // boutons dans le template ne suffit pas : le serveur doit vérifier.
+        if ($personnage->isAutorise() !== null) {
+            $this->addFlash('error', 'Ce personnage a déjà été modéré.');
+            return $this->redirectToRoute('app_espace_employe');
+        }
+
         // Approuver le personnage
         $personnage->setAutorise(true);
         $em->flush();
@@ -196,6 +203,13 @@ class EspaceEmployeController extends AbstractController
         // Un employé ne peut pas rejeter son propre personnage
         if ($personnage->getUtilisateur() === $this->getUser()) {
             $this->addFlash('error', 'Vous ne pouvez pas modérer votre propre personnage.');
+            return $this->redirectToRoute('app_espace_employe');
+        }
+
+        // Seul un personnage en attente peut être approuvé ou rejeté. Masquer les
+        // boutons dans le template ne suffit pas : le serveur doit vérifier.
+        if ($personnage->isAutorise() !== null) {
+            $this->addFlash('error', 'Ce personnage a déjà été modéré.');
             return $this->redirectToRoute('app_espace_employe');
         }
 
