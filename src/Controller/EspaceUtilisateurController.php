@@ -238,6 +238,13 @@ class EspaceUtilisateurController extends AbstractController
             }
 
             if ($action === 'ajouter') {
+                // Un article désactivé n'est plus proposé, mais le formulaire pouvait
+                // être renvoyé à la main avec son identifiant
+                if (!$article->isActif()) {
+                    $this->addFlash('error', 'Cet article n\'est plus disponible.');
+                    return $this->redirectToRoute('app_personnage_accessoires', ['id' => $personnage->getId()]);
+                }
+
                 if (!$personnage->getArticles()->contains($article)) {
                     $personnage->addArticle($article);
                     $this->entityManager->flush();

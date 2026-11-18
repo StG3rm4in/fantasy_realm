@@ -308,6 +308,18 @@ class EspaceEmployeController extends AbstractController
             return $this->redirectToRoute('app_espace_employe');
         }
 
+        // Un employé ne modère pas son propre avis (comme pour les personnages)
+        if ($commentaire->getAuteur() === $this->getUser()) {
+            $this->addFlash('error', 'Vous ne pouvez pas modérer votre propre avis.');
+            return $this->redirectToRoute('app_espace_employe');
+        }
+
+        // Seul un avis en attente se modère (évite un second mail au propriétaire)
+        if ($commentaire->getStatut() !== 'en_attente') {
+            $this->addFlash('error', 'Cet avis a déjà été modéré.');
+            return $this->redirectToRoute('app_espace_employe');
+        }
+
         $commentaire->setStatut('approuve');
         $em->flush();
 
@@ -352,6 +364,18 @@ class EspaceEmployeController extends AbstractController
         $token = $request->request->get('_token');
         if (!$this->isCsrfTokenValid('reject-avis-' . $commentaire->getId(), $token)) {
             $this->addFlash('error', 'Token CSRF invalide.');
+            return $this->redirectToRoute('app_espace_employe');
+        }
+
+        // Un employé ne modère pas son propre avis (comme pour les personnages)
+        if ($commentaire->getAuteur() === $this->getUser()) {
+            $this->addFlash('error', 'Vous ne pouvez pas modérer votre propre avis.');
+            return $this->redirectToRoute('app_espace_employe');
+        }
+
+        // Seul un avis en attente se modère (évite un second mail au propriétaire)
+        if ($commentaire->getStatut() !== 'en_attente') {
+            $this->addFlash('error', 'Cet avis a déjà été modéré.');
             return $this->redirectToRoute('app_espace_employe');
         }
 

@@ -272,6 +272,13 @@ class EspaceAdminController extends AbstractController
             return $this->redirectToRoute('app_espace_admin');
         }
 
+        // Seuls les comptes employés se modifient ici : en changeant l'identifiant
+        // dans l'URL, on pouvait modifier le mail et le mot de passe d'un utilisateur.
+        if (!in_array('ROLE_EMPLOYEE', $user->getRoles())) {
+            $this->addFlash('error', 'Seuls les comptes employés peuvent être modifiés ici.');
+            return $this->redirectToRoute('app_espace_admin');
+        }
+
         if ($request->isMethod('POST')) {
             $token = $request->request->get('_token');
             if (!$this->isCsrfTokenValid('employe-edit-' . $user->getId(), $token)) {
