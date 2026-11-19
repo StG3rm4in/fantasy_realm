@@ -1,0 +1,4 @@
+# Les scripts shell s'exécutent dans des conteneurs Linux : ils doivent garder
+# des fins de ligne LF, même clonés sous Windows (où Git convertit par défaut
+# en CRLF, ce qui empêche le conteneur PHP de démarrer).
+*.sh text eol=lf
