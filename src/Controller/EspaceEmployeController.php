@@ -841,6 +841,9 @@ class EspaceEmployeController extends AbstractController
             sprintf('Utilisateur "%s" (id: %d) supprimé par %s', $pseudo, $userId, $currentUser->getPseudo())
         );
 
+        // RGPD : son pseudo est retiré du journal d'activité (y compris du log ci-dessus)
+        $this->mongoLogService->anonymiserUtilisateur($userId, $pseudo);
+
         // Supprimer l'utilisateur et toutes ses données (cascade via entity config)
         $em->remove($user);
         $em->flush();
