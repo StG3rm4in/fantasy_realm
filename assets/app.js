@@ -23,9 +23,14 @@ var _flags = {};
 // TURBO ERROR HANDLER
 // ============================================================================
 document.addEventListener('turbo:submit-end', function(event) {
-    if (!event.detail.success) {
-        showToast('Impossible d\'envoyer le formulaire. Vérifiez votre connexion ou réessayez.', 'danger');
+    var reponse = event.detail.fetchResponse;
+    // Erreur de saisie (422…) : la page renvoyée par le serveur affiche déjà le message.
+    if (event.detail.success || (reponse && reponse.clientError)) {
+        return;
     }
+    showToast(reponse && reponse.serverError
+        ? 'Erreur du serveur. Réessayez dans un instant.'
+        : 'Impossible d\'envoyer le formulaire. Vérifiez votre connexion ou réessayez.', 'danger');
 });
 
 document.addEventListener('turbo:fetch-request-error', function() {

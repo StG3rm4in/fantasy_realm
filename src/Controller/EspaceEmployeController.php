@@ -161,11 +161,16 @@ class EspaceEmployeController extends AbstractController
         // Envoyer l'email de notification au propriétaire
         $owner = $personnage->getUtilisateur();
         if ($owner !== null) {
-            $this->mailService->sendPersonnageApproved(
-                $owner->getEmail(),
-                $owner->getPseudo(),
-                $personnage->getNom()
-            );
+            // Un échec d'envoi (quota, SMTP indisponible) ne doit pas annuler l'action
+            try {
+                $this->mailService->sendPersonnageApproved(
+                    $owner->getEmail(),
+                    $owner->getPseudo(),
+                    $personnage->getNom()
+                );
+            } catch (\Throwable $e) {
+                $this->addFlash('warning', 'Action effectuée, mais le mail au propriétaire n\'a pas pu être envoyé.');
+            }
         }
 
         // Log dans MongoDB
@@ -225,12 +230,17 @@ class EspaceEmployeController extends AbstractController
 
         // Envoyer l'email de rejet au propriétaire AVANT la suppression
         if ($owner !== null) {
-            $this->mailService->sendPersonnageRejected(
-                $owner->getEmail(),
-                $owner->getPseudo(),
-                $nomPersonnage,
-                $reason
-            );
+            // Un échec d'envoi (quota, SMTP indisponible) ne doit pas annuler l'action
+            try {
+                $this->mailService->sendPersonnageRejected(
+                    $owner->getEmail(),
+                    $owner->getPseudo(),
+                    $nomPersonnage,
+                    $reason
+                );
+            } catch (\Throwable $e) {
+                $this->addFlash('warning', 'Action effectuée, mais le mail au propriétaire n\'a pas pu être envoyé.');
+            }
         }
 
         // Log dans MongoDB avant suppression
@@ -308,6 +318,18 @@ class EspaceEmployeController extends AbstractController
             return $this->redirectToRoute('app_espace_employe');
         }
 
+        // Un employé ne modère pas son propre avis (comme pour les personnages)
+        if ($commentaire->getAuteur() === $this->getUser()) {
+            $this->addFlash('error', 'Vous ne pouvez pas modérer votre propre avis.');
+            return $this->redirectToRoute('app_espace_employe');
+        }
+
+        // Seul un avis en attente se modère (évite un second mail au propriétaire)
+        if ($commentaire->getStatut() !== 'en_attente') {
+            $this->addFlash('error', 'Cet avis a déjà été modéré.');
+            return $this->redirectToRoute('app_espace_employe');
+        }
+
         $commentaire->setStatut('approuve');
         $em->flush();
 
@@ -316,11 +338,16 @@ class EspaceEmployeController extends AbstractController
         if ($personnage !== null) {
             $owner = $personnage->getUtilisateur();
             if ($owner !== null) {
-                $this->mailService->sendCommentaireApproved(
-                    $owner->getEmail(),
-                    $owner->getPseudo(),
-                    $personnage->getNom()
-                );
+                // Un échec d'envoi (quota, SMTP indisponible) ne doit pas annuler l'action
+                try {
+                    $this->mailService->sendCommentaireApproved(
+                        $owner->getEmail(),
+                        $owner->getPseudo(),
+                        $personnage->getNom()
+                    );
+                } catch (\Throwable $e) {
+                    $this->addFlash('warning', 'Action effectuée, mais le mail au propriétaire n\'a pas pu être envoyé.');
+                }
             }
         }
 
@@ -352,6 +379,18 @@ class EspaceEmployeController extends AbstractController
         $token = $request->request->get('_token');
         if (!$this->isCsrfTokenValid('reject-avis-' . $commentaire->getId(), $token)) {
             $this->addFlash('error', 'Token CSRF invalide.');
+            return $this->redirectToRoute('app_espace_employe');
+        }
+
+        // Un employé ne modère pas son propre avis (comme pour les personnages)
+        if ($commentaire->getAuteur() === $this->getUser()) {
+            $this->addFlash('error', 'Vous ne pouvez pas modérer votre propre avis.');
+            return $this->redirectToRoute('app_espace_employe');
+        }
+
+        // Seul un avis en attente se modère (évite un second mail au propriétaire)
+        if ($commentaire->getStatut() !== 'en_attente') {
+            $this->addFlash('error', 'Cet avis a déjà été modéré.');
             return $this->redirectToRoute('app_espace_employe');
         }
 
@@ -409,14 +448,14 @@ class EspaceEmployeController extends AbstractController
             $allowedTypes = ['vetement', 'armure', 'accessoire', 'arme'];
 
             // Validation
-            if ($nom === '') {
-                $this->addFlash('error', 'Le nom de l\'article est requis.');
+            if ($nom === '' || mb_strlen($nom) > 50) {
+                $this->addFlash('error', 'Le nom de l\'article est requis et ne doit pas dépasser 50 caractères.');
                 return $this->render('espace_employe/articles/form.html.twig', [
                     'article' => null,
                     'isEdit' => false,
                     'nom' => $nom,
                     'type' => $type,
-                ]);
+                ], new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY));
             }
 
             if (!in_array($type, $allowedTypes, true)) {
@@ -426,7 +465,7 @@ class EspaceEmployeController extends AbstractController
                     'isEdit' => false,
                     'nom' => $nom,
                     'type' => $type,
-                ]);
+                ], new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY));
             }
 
             $article = new Article();
@@ -488,14 +527,14 @@ class EspaceEmployeController extends AbstractController
             $allowedTypes = ['vetement', 'armure', 'accessoire', 'arme'];
 
             // Validation
-            if ($nom === '') {
-                $this->addFlash('error', 'Le nom de l\'article est requis.');
+            if ($nom === '' || mb_strlen($nom) > 50) {
+                $this->addFlash('error', 'Le nom de l\'article est requis et ne doit pas dépasser 50 caractères.');
                 return $this->render('espace_employe/articles/form.html.twig', [
                     'article' => $article,
                     'isEdit' => true,
                     'nom' => $nom,
                     'type' => $type,
-                ]);
+                ], new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY));
             }
 
             if (!in_array($type, $allowedTypes, true)) {
@@ -505,7 +544,7 @@ class EspaceEmployeController extends AbstractController
                     'isEdit' => true,
                     'nom' => $nom,
                     'type' => $type,
-                ]);
+                ], new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY));
             }
 
             $article->setNom($nom);

@@ -79,7 +79,7 @@ class EspaceUtilisateurController extends AbstractController
                 $this->addFlash('error', 'Un personnage avec ce nom existe déjà. Veuillez choisir un autre nom.');
                 return $this->render('espace_utilisateur/personnage_create.html.twig', [
                     'form' => $form,
-                ]);
+                ], new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY));
             }
 
             // Fallback : generation serveur si pas d'image client
@@ -163,6 +163,16 @@ class EspaceUtilisateurController extends AbstractController
                 }
             }
 
+            // Nom déjà pris par un autre personnage : message clair au lieu d'une erreur 500
+            $homonyme = $this->entityManager->getRepository(Personnage::class)->findOneBy(['nom' => $personnage->getNom()]);
+            if ($homonyme !== null && $homonyme !== $personnage) {
+                $this->addFlash('error', 'Un personnage avec ce nom existe déjà. Veuillez choisir un autre nom.');
+                return $this->render('espace_utilisateur/personnage_edit.html.twig', [
+                    'form' => $form,
+                    'personnage' => $personnage,
+                ], new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY));
+            }
+
             // Si le personnage est partage, remettre en attente de moderation
             if ($personnage->isPartage()) {
                 $personnage->setAutorise(null);
@@ -228,6 +238,13 @@ class EspaceUtilisateurController extends AbstractController
             }
 
             if ($action === 'ajouter') {
+                // Un article désactivé n'est plus proposé, mais le formulaire pouvait
+                // être renvoyé à la main avec son identifiant
+                if (!$article->isActif()) {
+                    $this->addFlash('error', 'Cet article n\'est plus disponible.');
+                    return $this->redirectToRoute('app_personnage_accessoires', ['id' => $personnage->getId()]);
+                }
+
                 if (!$personnage->getArticles()->contains($article)) {
                     $personnage->addArticle($article);
                     $this->entityManager->flush();
@@ -368,8 +385,15 @@ class EspaceUtilisateurController extends AbstractController
                 return $this->redirectToRoute('app_personnage_dupliquer', ['id' => $personnage->getId()]);
             }
 
-            if (strlen($newName) < 2 || strlen($newName) > 50) {
+            // mb_strlen compte les caractères : strlen comptait les octets (« é » = 2)
+            if (mb_strlen($newName) < 2 || mb_strlen($newName) > 50) {
                 $this->addFlash('error', 'Le nom doit contenir entre 2 et 50 caractères.');
+                return $this->redirectToRoute('app_personnage_dupliquer', ['id' => $personnage->getId()]);
+            }
+
+            // Nom déjà pris : message clair au lieu d'une erreur 500
+            if ($this->entityManager->getRepository(Personnage::class)->findOneBy(['nom' => $newName]) !== null) {
+                $this->addFlash('error', 'Un personnage avec ce nom existe déjà. Veuillez choisir un autre nom.');
                 return $this->redirectToRoute('app_personnage_dupliquer', ['id' => $personnage->getId()]);
             }
 

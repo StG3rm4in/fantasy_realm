@@ -24,13 +24,9 @@ class UserProvider implements UserProviderInterface, PasswordUpgraderInterface
      */
     public function loadUserByIdentifier(string $identifier): UserInterface
     {
-        // Try to find user by email first
+        // Connexion par mail uniquement, comme le prévoit le sujet : le pseudo est
+        // affiché publiquement dans la galerie, il ne doit pas servir d'identifiant.
         $user = $this->userRepository->findOneBy(['email' => $identifier]);
-
-        // If not found, try by pseudo
-        if (!$user) {
-            $user = $this->userRepository->findOneBy(['pseudo' => $identifier]);
-        }
 
         if (!$user) {
             throw new UserNotFoundException(sprintf('User "%s" not found.', $identifier));

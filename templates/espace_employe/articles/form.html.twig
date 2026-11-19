@@ -22,7 +22,7 @@
                             Modifier l'article
                         {% else %}
                             <i class="bi bi-plus-lg text-success me-2" aria-hidden="true"></i>
-                            Creer un article
+                            Créer un article
                         {% endif %}
                     </h1>
                 </div>
@@ -56,8 +56,8 @@
                                 Type <span class="text-danger">*</span>
                             </label>
                             <select class="form-select" id="type" name="type" required>
-                                <option value="" disabled {{ (type ?? '') == '' ? 'selected' : '' }}>Selectionnez un type</option>
-                                <option value="vetement" {{ (type ?? '') == 'vetement' ? 'selected' : '' }}>Vetement</option>
+                                <option value="" disabled {{ (type ?? '') == '' ? 'selected' : '' }}>Sélectionnez un type</option>
+                                <option value="vetement" {{ (type ?? '') == 'vetement' ? 'selected' : '' }}>Vêtement</option>
                                 <option value="armure" {{ (type ?? '') == 'armure' ? 'selected' : '' }}>Armure</option>
                                 <option value="accessoire" {{ (type ?? '') == 'accessoire' ? 'selected' : '' }}>Accessoire</option>
                                 <option value="arme" {{ (type ?? '') == 'arme' ? 'selected' : '' }}>Arme</option>
@@ -98,7 +98,7 @@
                                     Enregistrer les modifications
                                 {% else %}
                                     <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>
-                                    Creer l'article
+                                    Créer l'article
                                 {% endif %}
                             </button>
                         </div>

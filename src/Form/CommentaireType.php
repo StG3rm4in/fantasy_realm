@@ -42,13 +42,13 @@ class CommentaireType extends AbstractType
                     'placeholder' => 'Partagez votre avis sur ce personnage...',
                     'class' => 'form-control',
                     'rows' => 5,
-                    'maxlength' => 1000
+                    'maxlength' => 500
                 ],
                 'constraints' => [
                     new Assert\NotBlank(message: 'Le commentaire est requis'),
                     new Assert\Length(
                         min: 10,
-                        max: 1000,
+                        max: 500,
                         minMessage: 'Votre avis doit contenir au moins {{ limit }} caractères',
                         maxMessage: 'Votre avis ne peut pas dépasser {{ limit }} caractères'
                     )

@@ -46,7 +46,8 @@ class EspaceAdminController extends AbstractController
         $filterAction = $request->query->get('action');
         $filterDateDebut = $request->query->get('date_debut');
         $filterDateFin = $request->query->get('date_fin');
-        $page = max(1, (int) $request->query->get('page', 1));
+        // Page bornée : un numéro énorme provoquait une erreur 500
+        $page = min(max(1, (int) $request->query->get('page', 1)), 100000);
         $limit = 50;
         $offset = ($page - 1) * $limit;
 
@@ -161,6 +162,9 @@ class EspaceAdminController extends AbstractController
                 if (strlen($password) < 12) {
                     $errors[] = 'Le mot de passe doit contenir au moins 12 caractères.';
                 }
+                if (strlen($password) > 4096) {
+                    $errors[] = 'Le mot de passe ne peut pas dépasser 4096 caractères.';
+                }
                 if (!preg_match('/[A-Z]/', $password)) {
                     $errors[] = 'Le mot de passe doit contenir au moins une majuscule.';
                 }
@@ -187,7 +191,7 @@ class EspaceAdminController extends AbstractController
                     'isEdit' => false,
                     'pseudo' => $pseudo,
                     'email' => $email,
-                ]);
+                ], new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY));
             }
 
             // Récupérer le rôle 'employe'
@@ -216,7 +220,7 @@ class EspaceAdminController extends AbstractController
                     'isEdit' => false,
                     'pseudo' => $pseudo,
                     'email' => $email,
-                ]);
+                ], new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY));
             }
 
             $em->persist($user);
@@ -268,6 +272,13 @@ class EspaceAdminController extends AbstractController
             return $this->redirectToRoute('app_espace_admin');
         }
 
+        // Seuls les comptes employés se modifient ici : en changeant l'identifiant
+        // dans l'URL, on pouvait modifier le mail et le mot de passe d'un utilisateur.
+        if (!in_array('ROLE_EMPLOYEE', $user->getRoles())) {
+            $this->addFlash('error', 'Seuls les comptes employés peuvent être modifiés ici.');
+            return $this->redirectToRoute('app_espace_admin');
+        }
+
         if ($request->isMethod('POST')) {
             $token = $request->request->get('_token');
             if (!$this->isCsrfTokenValid('employe-edit-' . $user->getId(), $token)) {
@@ -302,6 +313,9 @@ class EspaceAdminController extends AbstractController
                 if (strlen($newPassword) < 12) {
                     $errors[] = 'Le mot de passe doit contenir au moins 12 caractères.';
                 }
+                if (strlen($newPassword) > 4096) {
+                    $errors[] = 'Le mot de passe ne peut pas dépasser 4096 caractères.';
+                }
                 if (!preg_match('/[A-Z]/', $newPassword)) {
                     $errors[] = 'Le mot de passe doit contenir au moins une majuscule.';
                 }
@@ -328,7 +342,7 @@ class EspaceAdminController extends AbstractController
                     'user' => $user,
                     'pseudo' => $pseudo,
                     'email' => $email,
-                ]);
+                ], new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY));
             }
 
             $user->setPseudo($pseudo);
@@ -351,7 +365,7 @@ class EspaceAdminController extends AbstractController
                     'user' => $user,
                     'pseudo' => $pseudo,
                     'email' => $email,
-                ]);
+                ], new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY));
             }
 
             $em->flush();

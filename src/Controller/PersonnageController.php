@@ -41,14 +41,17 @@ class PersonnageController extends AbstractController
                ->setParameter('genre', $genre);
         }
 
-        if ($dateDebut) {
+        // Dates au format AAAA-MM-JJ ; une date invalide est ignorée (avant : erreur 500)
+        $debut = $dateDebut ? \DateTime::createFromFormat('!Y-m-d', $dateDebut) : false;
+        if ($debut) {
             $qb->andWhere('p.dateCreation >= :dateDebut')
-               ->setParameter('dateDebut', new \DateTime($dateDebut));
+               ->setParameter('dateDebut', $debut);
         }
 
-        if ($dateFin) {
+        $fin = $dateFin ? \DateTime::createFromFormat('Y-m-d H:i:s', $dateFin . ' 23:59:59') : false;
+        if ($fin) {
             $qb->andWhere('p.dateCreation <= :dateFin')
-               ->setParameter('dateFin', new \DateTime($dateFin . ' 23:59:59'));
+               ->setParameter('dateFin', $fin);
         }
 
         if ($pseudo) {
@@ -59,13 +62,15 @@ class PersonnageController extends AbstractController
         // Pagination
         $page = max(1, (int) $request->query->get('page', 1));
         $limit = 12;
-        $offset = ($page - 1) * $limit;
 
         // Compter le total avant d'appliquer limit/offset
         $countQb = clone $qb;
         $countQb->select('COUNT(p.id)');
         $total = (int) $countQb->getQuery()->getSingleScalarResult();
         $totalPages = max(1, (int) ceil($total / $limit));
+        // Page bornée au nombre de pages : un numéro énorme provoquait une erreur 500
+        $page = min($page, $totalPages);
+        $offset = ($page - 1) * $limit;
 
         // Appliquer la pagination
         $personnages = $qb
@@ -145,7 +150,8 @@ class PersonnageController extends AbstractController
             'commentaires' => $commentairesApprouves,
             'commentaireForm' => $commentaireForm?->createView(),
             'userCommentaire' => $userCommentaire,
-        ]);
+        ], new Response(null, $commentaireForm?->isSubmitted() && !$commentaireForm->isValid()
+            ? Response::HTTP_UNPROCESSABLE_ENTITY : Response::HTTP_OK));
     }
 
     #[Route('/personnage/avis/{id}/modifier', name: 'app_avis_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
