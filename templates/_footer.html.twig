@@ -54,16 +54,17 @@
     </div>
 </footer>
 
-{# Cookie Consent Banner (RGPD) #}
-<div id="cookie-banner" class="position-fixed bottom-0 start-0 end-0 bg-dark border-top border-secondary p-3" style="z-index: 9999; display: none;" role="alert" aria-label="Bandeau de consentement cookies">
+{# Bandeau d'information (RGPD) : le site n'a qu'un cookie indispensable, aucun
+   consentement n'est nécessaire ; le bandeau informe, il ne demande pas d'accord #}
+<div id="cookie-banner" class="position-fixed bottom-0 start-0 end-0 bg-dark border-top border-secondary p-3" style="z-index: 9999; display: none;" role="region" aria-label="Information sur les cookies">
     <div class="container d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
         <p class="mb-0 small text-light">
-            Ce site utilise des cookies pour améliorer votre expérience. En continuant à naviguer, vous acceptez notre
+            Ce site n'utilise qu'un cookie de session, indispensable pour se connecter : aucun cookie de mesure
+            d'audience ni de publicité. En savoir plus :
             <a href="{{ path('app_politique_confidentialite') }}" class="text-primary">politique de confidentialité</a>.
         </p>
         <div class="d-flex gap-2 flex-shrink-0">
-            <button id="cookie-accept" class="btn btn-primary btn-sm">Accepter</button>
-            <button id="cookie-refuse" class="btn btn-outline-secondary btn-sm">Refuser</button>
+            <button type="button" id="cookie-accept" class="btn btn-primary btn-sm">J'ai compris</button>
         </div>
     </div>
 </div>

@@ -60,7 +60,7 @@ Projet réalisé seul, en parallèle de la préparation du baccalauréat.
 | 16 novembre | Maquettes (wireframes et mockups) réalisées avec Claude Design d'après l'application, nettoyage des comptes de production. |
 | 17 novembre | Couleurs du site alignées sur la charte (contrastes RGAA), charte mise à jour, documentation versionnée, déploiement. |
 | 18 novembre | Audit du code ; correction et déploiement de deux bugs (page employé de détail, « mot de passe oublié ») ; veille sur les vulnérabilités (`composer audit`) ; manuel et charte en PDF, maquettes exportées ; README corrigé ; dépôt prêt à être rendu public. |
-| 19 novembre | Rendu de l'ECF. |
+| 19 novembre | Corrections de l'audit (textes, messages d'erreur, saisies, contrôles de sécurité, mails, contrastes RGAA), en-têtes de sécurité HTTP, RGPD (politique de confidentialité exacte, logs anonymisés à la suppression d'un compte et conservés 12 mois) ; tests de bout en bout et de sécurité ; rendu de l'ECF. |
 
 ---
 
@@ -114,7 +114,7 @@ Mises en production : 12, 14, 17 et 18 novembre 2026.
 - Tester les parcours complets de chaque rôle.
 - Mettre à jour les dépendances (`composer audit` du 18 novembre : 61 avis de
   sécurité, correctifs disponibles en Symfony 8.1).
-- Corriger les points relevés par l'audit du code : validation du nom
+- Corriger les points de l'audit encore ouverts : validation du nom
   contournable après approbation, image du personnage reçue du navigateur sans
-  contrôle, erreurs 500 sur certaines saisies, conservation des logs (RGPD).
+  contrôle, formulaire d'avis au clavier.
 - Sécuriser l'accès SSH au serveur (connexion `root` par mot de passe à fermer).

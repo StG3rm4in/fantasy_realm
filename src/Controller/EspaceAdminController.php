@@ -488,6 +488,9 @@ class EspaceAdminController extends AbstractController
             sprintf('Employé "%s" (id: %d) supprimé par %s', $pseudo, $userId, $currentUser->getPseudo())
         );
 
+        // RGPD : son pseudo est retiré du journal d'activité (y compris du log ci-dessus)
+        $this->mongoLogService->anonymiserUtilisateur($userId, $pseudo);
+
         $em->remove($user);
         $em->flush();
 

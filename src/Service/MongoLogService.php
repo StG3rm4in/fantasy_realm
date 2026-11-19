@@ -73,6 +73,10 @@ class MongoLogService
         }
 
         try {
+            // RGPD, durée de conservation : index TTL, MongoDB supprime lui-même les
+            // logs de plus de 12 mois (sans effet s'il existe déjà)
+            $collection->createIndex(['date' => 1], ['expireAfterSeconds' => 365 * 24 * 3600, 'name' => 'conservation_12_mois']);
+
             $collection->insertOne([
                 'id_utilisateur' => $idUtilisateur,
                 'pseudo' => $pseudo,
@@ -82,6 +86,43 @@ class MongoLogService
                 'details' => $details,
                 'date' => new \MongoDB\BSON\UTCDateTime(),
             ]);
+        } catch (\Exception $e) {
+            // Silently fail
+        }
+    }
+
+    /**
+     * RGPD, droit à l'effacement : à la suppression d'un compte, ses logs ne
+     * l'identifient plus. Les actions restent dans le journal, sans pseudo.
+     * Le pseudo cité dans le texte d'autres logs (« Utilisateur "x" supprimé
+     * par y », « … par x ») est aussi remplacé.
+     */
+    public function anonymiserUtilisateur(int $idUtilisateur, string $pseudo): void
+    {
+        $collection = $this->getCollection();
+        if ($collection === null) {
+            return;
+        }
+
+        $remplacement = 'compte supprimé';
+        try {
+            $collection->updateMany(
+                ['id_utilisateur' => $idUtilisateur],
+                ['$set' => ['id_utilisateur' => 0, 'pseudo' => $remplacement]]
+            );
+            // Mise à jour par pipeline : $replaceAll remplace le texte dans le champ details
+            $remplacements = [
+                // « Utilisateur "x" supprimé par … » : pseudo entre guillemets
+                [preg_quote('"' . $pseudo . '"', '/'), '"' . $pseudo . '"', '"' . $remplacement . '"'],
+                // « … supprimé par x » : pseudo en fin de texte (pas « par x2 »)
+                ['par ' . preg_quote($pseudo, '/') . '$', 'par ' . $pseudo, 'par ' . $remplacement],
+            ];
+            foreach ($remplacements as [$filtre, $cherche, $remplace]) {
+                $collection->updateMany(
+                    ['details' => ['$regex' => $filtre]],
+                    [['$set' => ['details' => ['$replaceAll' => ['input' => '$details', 'find' => $cherche, 'replacement' => $remplace]]]]]
+                );
+            }
         } catch (\Exception $e) {
             // Silently fail
         }
