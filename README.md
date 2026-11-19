@@ -22,6 +22,9 @@ d'autres mots de passe, communiqués au jury dans la copie.
 ### Prérequis
 - Docker Desktop installé et démarré
 - Git
+- Ports libres sur la machine : 8090 (site), 3308 (MySQL), 27019 (MongoDB),
+  8026 et 1026 (Mailpit). Un MySQL déjà installé sur le port 3308 (XAMPP par
+  exemple) empêche la base Docker de démarrer.
 
 ### Lancement
 
@@ -102,7 +105,16 @@ MONGODB_DB=fantasyrealm_logs
 # SMTP2GO :    smtp://utilisateur:mot_de_passe@mail.smtp2go.com:587
 # Mailgun :    smtp://utilisateur:mot_de_passe@smtp.mailgun.org:587
 MAILER_DSN=smtp://utilisateur:mot_de_passe@smtp.votre-fournisseur.com:587
+
+# Expéditeur des mails (adresse autorisée par le fournisseur SMTP)
+# et destinataire des messages du formulaire de contact
+MAILER_FROM=noreply@votre-domaine.com
+CONTACT_EMAIL=contact@votre-domaine.com
 ```
+
+> Sans `MAILER_FROM` et `CONTACT_EMAIL`, `docker-compose.prod.yml` transmet des
+> adresses vides à l'application : aucun mail ne part (inscription, contact,
+> modération).
 
 > **Règles pour ces mots de passe de service :** au moins 32 caractères, uniquement
 > des lettres et des chiffres. Ils sont insérés dans `DATABASE_URL` et `MONGODB_URL`
@@ -342,6 +354,8 @@ fantasy_realm/
 | `MONGO_PASSWORD` | Mot de passe MongoDB | 32 lettres et chiffres |
 | `MONGODB_DB` | Nom de la base MongoDB | `fantasyrealm_logs` |
 | `MAILER_DSN` | DSN du serveur SMTP | `smtp://user:pass@host:587` |
+| `MAILER_FROM` | Adresse d'expédition des mails | `noreply@votre-domaine.com` |
+| `CONTACT_EMAIL` | Destinataire du formulaire de contact | `contact@votre-domaine.com` |
 
 ---
 
