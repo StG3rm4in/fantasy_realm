@@ -60,6 +60,14 @@ main {
     color: white;
 }
 
+/* Focus clavier visible (RGAA 10.7) : ces boutons n'ont pas de variante
+   Bootstrap, donc pas d'anneau de focus par défaut */
+.btn-hero:focus-visible,
+.btn-hero-outline:focus-visible {
+    outline: 3px solid var(--primary-text);
+    outline-offset: 3px;
+}
+
 /* ===== Cards ===== */
 .card-fantasy {
     background: rgba(30, 30, 46, 0.8);
