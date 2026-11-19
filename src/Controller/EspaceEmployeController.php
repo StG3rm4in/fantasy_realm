@@ -15,7 +15,6 @@ use App\Service\MongoLogService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -664,7 +663,7 @@ class EspaceEmployeController extends AbstractController
     }
 
     // =========================================================================
-    // UTILISATEURS - Gestion (AJAX + fallback)
+    // UTILISATEURS - Gestion
     // =========================================================================
 
     #[Route('/utilisateurs/{id}/suspendre', name: 'app_employe_user_suspend', requirements: ['id' => '\d+'], methods: ['POST'])]
@@ -675,27 +674,18 @@ class EspaceEmployeController extends AbstractController
     ): Response {
         // Vérifier le token CSRF
         if (!$this->isCsrfTokenValid('suspend' . $user->getId(), $request->request->get('_token'))) {
-            if ($request->isXmlHttpRequest()) {
-                return $this->json(['success' => false, 'message' => 'Token CSRF invalide.'], Response::HTTP_BAD_REQUEST);
-            }
             $this->addFlash('error', 'Token CSRF invalide.');
             return $this->redirectToRoute('app_espace_employe');
         }
 
         // Vérifier qu'on ne suspend pas un administrateur ou un employé
         if (in_array('ROLE_ADMIN', $user->getRoles()) || in_array('ROLE_EMPLOYEE', $user->getRoles())) {
-            if ($request->isXmlHttpRequest()) {
-                return $this->json(['success' => false, 'message' => 'Impossible de suspendre cet utilisateur.'], Response::HTTP_FORBIDDEN);
-            }
             $this->addFlash('error', 'Impossible de suspendre cet utilisateur.');
             return $this->redirectToRoute('app_espace_employe');
         }
 
         // Vérifier qu'on ne se suspend pas soi-même
         if ($user === $this->getUser()) {
-            if ($request->isXmlHttpRequest()) {
-                return $this->json(['success' => false, 'message' => 'Vous ne pouvez pas vous suspendre vous-même.'], Response::HTTP_FORBIDDEN);
-            }
             $this->addFlash('error', 'Vous ne pouvez pas vous suspendre vous-même.');
             return $this->redirectToRoute('app_espace_employe');
         }
@@ -715,25 +705,6 @@ class EspaceEmployeController extends AbstractController
             sprintf('Utilisateur "%s" suspendu par %s', $user->getPseudo(), $currentUser->getPseudo())
         );
 
-        if ($request->isXmlHttpRequest()) {
-            $tokenManager = $this->container->get('security.csrf.token_manager');
-
-            return $this->json([
-                'success' => true,
-                'message' => sprintf('L\'utilisateur %s a été suspendu.', $user->getPseudo()),
-                'user' => [
-                    'id' => $user->getId(),
-                    'pseudo' => $user->getPseudo(),
-                    'email' => $user->getEmail(),
-                    'suspendu' => true,
-                ],
-                'tokens' => [
-                    'unsuspend' => $tokenManager->getToken('unsuspend' . $user->getId())->getValue(),
-                    'delete' => $tokenManager->getToken('delete' . $user->getId())->getValue(),
-                ],
-            ]);
-        }
-
         $this->addFlash('success', sprintf('L\'utilisateur %s a été suspendu.', $user->getPseudo()));
 
         return $this->redirectToRoute('app_espace_employe');
@@ -747,9 +718,6 @@ class EspaceEmployeController extends AbstractController
     ): Response {
         // Vérifier le token CSRF
         if (!$this->isCsrfTokenValid('unsuspend' . $user->getId(), $request->request->get('_token'))) {
-            if ($request->isXmlHttpRequest()) {
-                return $this->json(['success' => false, 'message' => 'Token CSRF invalide.'], Response::HTTP_BAD_REQUEST);
-            }
             $this->addFlash('error', 'Token CSRF invalide.');
             return $this->redirectToRoute('app_espace_employe');
         }
@@ -769,25 +737,6 @@ class EspaceEmployeController extends AbstractController
             sprintf('Utilisateur "%s" réactivé par %s', $user->getPseudo(), $currentUser->getPseudo())
         );
 
-        if ($request->isXmlHttpRequest()) {
-            $tokenManager = $this->container->get('security.csrf.token_manager');
-
-            return $this->json([
-                'success' => true,
-                'message' => sprintf('L\'utilisateur %s a été réactivé.', $user->getPseudo()),
-                'user' => [
-                    'id' => $user->getId(),
-                    'pseudo' => $user->getPseudo(),
-                    'email' => $user->getEmail(),
-                    'suspendu' => false,
-                ],
-                'tokens' => [
-                    'suspend' => $tokenManager->getToken('suspend' . $user->getId())->getValue(),
-                    'delete' => $tokenManager->getToken('delete' . $user->getId())->getValue(),
-                ],
-            ]);
-        }
-
         $this->addFlash('success', sprintf('L\'utilisateur %s a été réactivé.', $user->getPseudo()));
 
         return $this->redirectToRoute('app_espace_employe');
@@ -801,27 +750,18 @@ class EspaceEmployeController extends AbstractController
     ): Response {
         // Vérifier le token CSRF
         if (!$this->isCsrfTokenValid('delete' . $user->getId(), $request->request->get('_token'))) {
-            if ($request->isXmlHttpRequest()) {
-                return $this->json(['success' => false, 'message' => 'Token CSRF invalide.'], Response::HTTP_BAD_REQUEST);
-            }
             $this->addFlash('error', 'Token CSRF invalide.');
             return $this->redirectToRoute('app_espace_employe');
         }
 
         // Vérifier qu'on ne supprime pas un administrateur ou un employé
         if (in_array('ROLE_ADMIN', $user->getRoles()) || in_array('ROLE_EMPLOYEE', $user->getRoles())) {
-            if ($request->isXmlHttpRequest()) {
-                return $this->json(['success' => false, 'message' => 'Impossible de supprimer cet utilisateur.'], Response::HTTP_FORBIDDEN);
-            }
             $this->addFlash('error', 'Impossible de supprimer cet utilisateur.');
             return $this->redirectToRoute('app_espace_employe');
         }
 
         // Vérifier qu'on ne se supprime pas soi-même
         if ($user === $this->getUser()) {
-            if ($request->isXmlHttpRequest()) {
-                return $this->json(['success' => false, 'message' => 'Vous ne pouvez pas vous supprimer vous-même.'], Response::HTTP_FORBIDDEN);
-            }
             $this->addFlash('error', 'Vous ne pouvez pas vous supprimer vous-même.');
             return $this->redirectToRoute('app_espace_employe');
         }
@@ -847,14 +787,6 @@ class EspaceEmployeController extends AbstractController
         // Supprimer l'utilisateur et toutes ses données (cascade via entity config)
         $em->remove($user);
         $em->flush();
-
-        if ($request->isXmlHttpRequest()) {
-            return $this->json([
-                'success' => true,
-                'message' => sprintf('L\'utilisateur %s a été supprimé définitivement.', $pseudo),
-                'userId' => $userId,
-            ]);
-        }
 
         $this->addFlash('success', sprintf('L\'utilisateur %s a été supprimé définitivement.', $pseudo));
 
