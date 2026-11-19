@@ -482,7 +482,8 @@ function renderToCanvas(ctx, svgString) {
  */
 export function initCharacterPreview() {
     var canvas = document.getElementById('character-preview');
-    if (!canvas) return;
+    if (!canvas || canvas.dataset.bound) return;
+    canvas.dataset.bound = '1';
 
     var ctx = canvas.getContext('2d');
 

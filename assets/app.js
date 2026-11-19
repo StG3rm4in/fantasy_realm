@@ -9,6 +9,8 @@ import { initCharacterPreview } from './services/PersonnageRenderer.js';
 function onReady(fn) {
     document.addEventListener('DOMContentLoaded', fn);
     document.addEventListener('turbo:load', fn);
+    // Formulaire refusé (422) : Turbo réaffiche la page sans turbo:load
+    document.addEventListener('turbo:render', fn);
 }
 
 // Reset flags avant chaque navigation Turbo
@@ -241,9 +243,6 @@ function initStarRating() {
     var radioStars = form.querySelectorAll('.star-icon');
     var ratingInputs = form.querySelectorAll('input[type="radio"][name*="note"]');
     var ratingText = document.getElementById('rating-text');
-    var ratingError = document.getElementById('rating-error');
-    var textarea = form.querySelector('textarea');
-    var commentaireError = document.getElementById('commentaire-error');
     var selectedRating = 0;
 
     // Check if this is an edit form (has pre-selected rating)
@@ -279,7 +278,6 @@ function initStarRating() {
             selectedRating = index + 1;
             updateRadioStars(selectedRating);
             if (ratingText) ratingText.textContent = ratingLabels[selectedRating];
-            if (ratingError) ratingError.style.display = 'none';
             ratingInputs.forEach(function(input) {
                 if (parseInt(input.value) === selectedRating) input.checked = true;
             });
@@ -302,55 +300,8 @@ function initStarRating() {
             }
         });
     }
-
-    // Character counter for review textarea
-    var counter = document.getElementById('char-counter');
-    if (textarea && counter) {
-        function updateCounter() {
-            var len = textarea.value.length;
-            counter.textContent = len + ' / 1000';
-            counter.classList.remove('text-danger', 'text-success', 'text-warning', 'text-muted');
-            if (len < 10) {
-                counter.classList.add('text-danger');
-            } else if (len > 900) {
-                counter.classList.add('text-warning');
-            } else {
-                counter.classList.add('text-success');
-            }
-        }
-        textarea.addEventListener('input', updateCounter);
-        updateCounter();
-    }
-
-    // Form validation
-    form.addEventListener('submit', function(e) {
-        var hasError = false;
-        var checkedRadio = Array.from(ratingInputs).find(function(input) { return input.checked; });
-
-        if (!checkedRadio || selectedRating === 0) {
-            e.preventDefault();
-            hasError = true;
-            if (ratingError) ratingError.style.display = 'block';
-        }
-
-        if (textarea) {
-            var commentLength = textarea.value.trim().length;
-            if (commentLength < 10 || commentLength > 1000) {
-                e.preventDefault();
-                hasError = true;
-                if (commentaireError) commentaireError.style.display = 'block';
-            }
-        }
-
-        if (hasError) {
-            if (ratingError && ratingError.style.display === 'block' && starRatingEl) {
-                starRatingEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            } else if (commentaireError && commentaireError.style.display === 'block' && textarea) {
-                textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                textarea.focus();
-            }
-        }
-    });
+    // Pas de validation JavaScript à l'envoi : le serveur valide la note et la
+    // longueur du commentaire (CommentaireType) et affiche ses messages
 }
 
 // ============================================================================
