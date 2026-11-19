@@ -153,7 +153,7 @@ Sur la page publique d'un personnage (accessible depuis la galerie) :
 
 1. Dans l'espace utilisateur, cliquer sur **"Supprimer mon compte"**
 2. Confirmer dans la fenêtre de sécurité
-3. Le compte, ses personnages et ses avis sont supprimés définitivement. L'historique d'activité consulté par l'administrateur (logs MongoDB) conserve toutefois le pseudo des actions passées
+3. Le compte, ses personnages et ses avis sont supprimés définitivement, et le pseudo est retiré de l'historique d'activité (logs MongoDB) : les actions passées y restent, attribuées à « compte supprimé »
 
 ---
 
@@ -248,7 +248,7 @@ Dans l'onglet **"Logs MongoDB"** :
 | Catalogue (employé) | `article_creation`, `article_modification`, `article_toggle` (activation / désactivation), `article_suppression` |
 | Comptes | `utilisateur_suspension`, `utilisateur_reactivation`, `utilisateur_suppression`, `employe_creation`, `employe_modification`, `employe_suspension`, `employe_reactivation`, `employe_suppression` |
 
-La pagination affiche **50 logs par page**.
+La pagination affiche **50 logs par page**. Chaque log est supprimé automatiquement au bout de 12 mois (RGPD).
 
 ---
 

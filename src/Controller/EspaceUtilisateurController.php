@@ -502,6 +502,8 @@ class EspaceUtilisateurController extends AbstractController
 
         // Supprimer le compte (RGPD - droit a l'effacement)
         // Les personnages et commentaires seront supprimes en cascade (orphanRemoval + cascade remove)
+        // et le journal d'activité (MongoDB) ne garde plus son pseudo
+        $this->mongoLogService->anonymiserUtilisateur($user->getId(), $user->getPseudo());
         $this->entityManager->remove($user);
         $this->entityManager->flush();
 
