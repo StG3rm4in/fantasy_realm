@@ -204,7 +204,9 @@
                         </h3>
                     </div>
                     <div class="card-body">
-                        {{ form_start(commentaireForm, { 'attr': { 'id': 'commentaire-form' } }) }}
+                        {# novalidate : les boutons radio de la note sont cachés, le navigateur ne
+   pourrait pas afficher son message ; le serveur valide et affiche les siens #}
+                        {{ form_start(commentaireForm, { 'attr': { 'id': 'commentaire-form', 'novalidate': 'novalidate' } }) }}
                             <div class="mb-3">
                                 <label class="form-label">Note</label>
                                 <div class="star-rating d-flex gap-1" role="radiogroup" aria-label="Sélectionner une note de 1 à 5 étoiles">
@@ -219,8 +221,9 @@
                                     {% endfor %}
                                 </div>
                                 <div class="d-none">
-                                    {{ form_widget(commentaireForm.note, { 'attr': { 'id': 'star-rating-input' } }) }}
+                                    {{ form_widget(commentaireForm.note) }}
                                 </div>
+                                {{ form_errors(commentaireForm.note) }}
                             </div>
 
                             <div class="mb-3">

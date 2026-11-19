@@ -9,6 +9,8 @@ import { initCharacterPreview } from './services/PersonnageRenderer.js';
 function onReady(fn) {
     document.addEventListener('DOMContentLoaded', fn);
     document.addEventListener('turbo:load', fn);
+    // Formulaire refusé (422) : Turbo réaffiche la page sans turbo:load
+    document.addEventListener('turbo:render', fn);
 }
 
 // Reset flags avant chaque navigation Turbo
@@ -232,59 +234,8 @@ function initCookieConsent() {
 function initStarRating() {
     if (_flags.starRating) return;
 
-    // Version avec data-value (detail.html.twig)
-    var stars = document.querySelectorAll('.star-rating .star-icon');
-    var ratingInput = document.getElementById('star-rating-input');
-    if (stars.length && ratingInput) {
-        _flags.starRating = true;
-        var currentRating = 0;
-
-        function setRating(value) {
-            currentRating = value;
-            ratingInput.value = value;
-            updateStarsDataValue(value);
-        }
-
-        function updateStarsDataValue(value) {
-            stars.forEach(function(star) {
-                var starValue = parseInt(star.getAttribute('data-value'));
-                if (starValue <= value) {
-                    star.classList.remove('bi-star', 'text-secondary');
-                    star.classList.add('bi-star-fill', 'text-warning');
-                    star.setAttribute('aria-checked', 'true');
-                } else {
-                    star.classList.remove('bi-star-fill', 'text-warning');
-                    star.classList.add('bi-star', 'text-secondary');
-                    star.setAttribute('aria-checked', 'false');
-                }
-            });
-        }
-
-        stars.forEach(function(star) {
-            star.addEventListener('click', function() {
-                setRating(parseInt(this.getAttribute('data-value')));
-            });
-            star.addEventListener('mouseenter', function() {
-                updateStarsDataValue(parseInt(this.getAttribute('data-value')));
-            });
-            star.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    setRating(parseInt(this.getAttribute('data-value')));
-                }
-            });
-        });
-
-        var ratingContainer = document.querySelector('.star-rating');
-        if (ratingContainer) {
-            ratingContainer.addEventListener('mouseleave', function() {
-                updateStarsDataValue(currentRating);
-            });
-        }
-        return;
-    }
-
-    // Version avec radio inputs (avis system - commentaire-form)
+    // Formulaire d'avis (detail.html.twig) : les étoiles cochent les boutons
+    // radio cachés du champ « note »
     var form = document.getElementById('commentaire-form');
     if (!form) return;
     _flags.starRating = true;
@@ -292,9 +243,6 @@ function initStarRating() {
     var radioStars = form.querySelectorAll('.star-icon');
     var ratingInputs = form.querySelectorAll('input[type="radio"][name*="note"]');
     var ratingText = document.getElementById('rating-text');
-    var ratingError = document.getElementById('rating-error');
-    var textarea = form.querySelector('textarea');
-    var commentaireError = document.getElementById('commentaire-error');
     var selectedRating = 0;
 
     // Check if this is an edit form (has pre-selected rating)
@@ -330,7 +278,6 @@ function initStarRating() {
             selectedRating = index + 1;
             updateRadioStars(selectedRating);
             if (ratingText) ratingText.textContent = ratingLabels[selectedRating];
-            if (ratingError) ratingError.style.display = 'none';
             ratingInputs.forEach(function(input) {
                 if (parseInt(input.value) === selectedRating) input.checked = true;
             });
@@ -353,55 +300,8 @@ function initStarRating() {
             }
         });
     }
-
-    // Character counter for review textarea
-    var counter = document.getElementById('char-counter');
-    if (textarea && counter) {
-        function updateCounter() {
-            var len = textarea.value.length;
-            counter.textContent = len + ' / 1000';
-            counter.classList.remove('text-danger', 'text-success', 'text-warning', 'text-muted');
-            if (len < 10) {
-                counter.classList.add('text-danger');
-            } else if (len > 900) {
-                counter.classList.add('text-warning');
-            } else {
-                counter.classList.add('text-success');
-            }
-        }
-        textarea.addEventListener('input', updateCounter);
-        updateCounter();
-    }
-
-    // Form validation
-    form.addEventListener('submit', function(e) {
-        var hasError = false;
-        var checkedRadio = Array.from(ratingInputs).find(function(input) { return input.checked; });
-
-        if (!checkedRadio || selectedRating === 0) {
-            e.preventDefault();
-            hasError = true;
-            if (ratingError) ratingError.style.display = 'block';
-        }
-
-        if (textarea) {
-            var commentLength = textarea.value.trim().length;
-            if (commentLength < 10 || commentLength > 1000) {
-                e.preventDefault();
-                hasError = true;
-                if (commentaireError) commentaireError.style.display = 'block';
-            }
-        }
-
-        if (hasError) {
-            if (ratingError && ratingError.style.display === 'block' && starRatingEl) {
-                starRatingEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            } else if (commentaireError && commentaireError.style.display === 'block' && textarea) {
-                textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                textarea.focus();
-            }
-        }
-    });
+    // Pas de validation JavaScript à l'envoi : le serveur valide la note et la
+    // longueur du commentaire (CommentaireType) et affiche ses messages
 }
 
 // ============================================================================
@@ -454,22 +354,6 @@ function initBackdropCleanup() {
 }
 
 // ============================================================================
-// CONFIRMATION DIALOGS
-// ============================================================================
-function initConfirmDialogs() {
-    document.querySelectorAll('.confirm-form button[type="submit"]').forEach(function(button) {
-        if (button.dataset.bound) return;
-        button.dataset.bound = '1';
-        button.addEventListener('click', function(e) {
-            var message = this.getAttribute('data-confirm-message');
-            if (message && !confirm(message)) {
-                e.preventDefault();
-            }
-        });
-    });
-}
-
-// ============================================================================
 // CONTACT FORM - CHARACTER COUNTER
 // ============================================================================
 function initContactCounter() {
@@ -487,351 +371,6 @@ function initContactCounter() {
 }
 
 // ============================================================================
-// ADMIN - TAB MANAGEMENT
-// ============================================================================
-function initAdminTabs() {
-    var adminTabs = document.getElementById('adminTabs');
-    if (!adminTabs) return;
-
-    var urlParams = new URLSearchParams(window.location.search);
-    var activeTab = urlParams.get('tab');
-
-    if (activeTab === 'logs') {
-        var logsTab = document.getElementById('logs-tab');
-        var logsPanel = document.getElementById('logs-panel');
-        var usersTab = document.getElementById('users-tab');
-        var usersPanel = document.getElementById('users-panel');
-
-        if (logsTab && logsPanel && usersTab && usersPanel) {
-            usersTab.classList.remove('active');
-            usersTab.setAttribute('aria-selected', 'false');
-            usersPanel.classList.remove('show', 'active');
-            logsTab.classList.add('active');
-            logsTab.setAttribute('aria-selected', 'true');
-            logsPanel.classList.add('show', 'active');
-        }
-    }
-
-    document.querySelectorAll('#adminTabs button[data-bs-toggle="tab"]').forEach(function(button) {
-        if (button.dataset.bound) return;
-        button.dataset.bound = '1';
-        button.addEventListener('shown.bs.tab', function(e) {
-            var targetId = e.target.getAttribute('data-bs-target');
-            var url = new URL(window.location);
-            if (targetId === '#logs-panel') {
-                url.searchParams.set('tab', 'logs');
-            } else {
-                url.searchParams.delete('tab');
-            }
-            window.history.pushState({}, '', url);
-        });
-    });
-}
-
-// ============================================================================
-// ADMIN - EMPLOYEE FORM - ROLE_USER MANDATORY
-// ============================================================================
-function initEmployeeForm() {
-    var employeeForm = document.querySelector('form[name="employee"]');
-    if (!employeeForm) return;
-
-    document.querySelectorAll('input[type="checkbox"][id*="roles"]').forEach(function(checkbox) {
-        if (checkbox.value === 'ROLE_USER') {
-            checkbox.checked = true;
-            checkbox.disabled = true;
-            checkbox.parentElement.style.opacity = '0.7';
-            checkbox.parentElement.style.cursor = 'not-allowed';
-
-            var form = checkbox.closest('form');
-            var hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.name = checkbox.name;
-            hiddenInput.value = 'ROLE_USER';
-            form.appendChild(hiddenInput);
-        }
-    });
-}
-
-// ============================================================================
-// EMPLOYEE - USER MANAGEMENT AJAX
-// ============================================================================
-function initUserManagement() {
-    if (_flags.userManagement) return;
-
-    var usersPanel = document.getElementById('users-panel');
-    if (!usersPanel) return;
-    _flags.userManagement = true;
-
-    function escapeHtml(text) {
-        var div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-
-    function updateCounters() {
-        var activeCount = document.querySelectorAll('#active-users-body table tbody tr').length;
-        var suspendedCount = document.querySelectorAll('#suspended-users-body table tbody tr').length;
-        var totalCount = activeCount + suspendedCount;
-
-        var el;
-        if ((el = document.getElementById('stat-active-count'))) el.textContent = activeCount;
-        if ((el = document.getElementById('stat-suspended-count'))) el.textContent = suspendedCount;
-        if ((el = document.getElementById('stat-total-count'))) el.textContent = totalCount;
-        if ((el = document.getElementById('active-users-count'))) el.textContent = activeCount;
-        if ((el = document.getElementById('suspended-users-count'))) el.textContent = suspendedCount;
-    }
-
-    function checkEmptyState(sectionId, isActive) {
-        var section = document.getElementById(sectionId);
-        if (!section) return;
-
-        var tbody = section.querySelector('table tbody');
-        var hasRows = tbody && tbody.querySelectorAll('tr').length > 0;
-
-        if (!hasRows) {
-            var msg = isActive ? 'Aucun utilisateur actif' : 'Aucun utilisateur suspendu';
-            section.innerHTML =
-                '<div class="text-center py-5 text-secondary empty-state">' +
-                    '<i class="bi bi-inbox fs-1 mb-3"></i>' +
-                    '<p class="mb-0">' + msg + '</p>' +
-                '</div>';
-        }
-    }
-
-    function createSuspendModal(user, tokens) {
-        var modalId = 'suspendModal' + user.id;
-        if (document.getElementById(modalId)) return;
-
-        document.body.insertAdjacentHTML('beforeend',
-            '<div class="modal fade" id="' + modalId + '" tabindex="-1" data-bs-backdrop="false">' +
-                '<div class="modal-dialog modal-dialog-centered">' +
-                    '<div class="modal-content bg-dark border border-warning">' +
-                        '<div class="modal-header border-warning">' +
-                            '<h5 class="modal-title"><i class="bi bi-pause-circle text-warning me-2"></i>Suspendre l\'utilisateur</h5>' +
-                            '<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>' +
-                        '</div>' +
-                        '<div class="modal-body">' +
-                            '<p class="mb-3">Suspendre <strong>' + escapeHtml(user.pseudo) + '</strong> ?</p>' +
-                            '<div class="alert alert-info mb-0"><i class="bi bi-info-circle me-2"></i>L\'utilisateur ne pourra plus se connecter.</div>' +
-                        '</div>' +
-                        '<div class="modal-footer border-warning">' +
-                            '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>' +
-                            '<form method="post" action="/employee/users/' + user.id + '/suspend" class="d-inline">' +
-                                '<input type="hidden" name="_token" value="' + tokens.suspend + '">' +
-                                '<button type="submit" class="btn btn-warning"><i class="bi bi-pause-circle me-1"></i>Suspendre</button>' +
-                            '</form>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>' +
-            '</div>'
-        );
-    }
-
-    function createDeleteModal(user, tokens, isSuspended) {
-        var modalId = isSuspended ? 'deleteSuspendedModal' + user.id : 'deleteModal' + user.id;
-        if (document.getElementById(modalId)) return;
-
-        document.body.insertAdjacentHTML('beforeend',
-            '<div class="modal fade" id="' + modalId + '" tabindex="-1" data-bs-backdrop="false">' +
-                '<div class="modal-dialog modal-dialog-centered">' +
-                    '<div class="modal-content bg-dark border border-danger">' +
-                        '<div class="modal-header border-danger">' +
-                            '<h5 class="modal-title"><i class="bi bi-trash text-danger me-2"></i>Supprimer l\'utilisateur</h5>' +
-                            '<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>' +
-                        '</div>' +
-                        '<div class="modal-body">' +
-                            '<p class="mb-3">Supprimer définitivement <strong>' + escapeHtml(user.pseudo) + '</strong> ?</p>' +
-                            '<div class="alert alert-danger mb-0"><i class="bi bi-exclamation-triangle me-2"></i><strong>Attention :</strong> Cette action est irréversible !</div>' +
-                        '</div>' +
-                        '<div class="modal-footer border-danger">' +
-                            '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>' +
-                            '<form method="post" action="/employee/users/' + user.id + '/delete" class="d-inline">' +
-                                '<input type="hidden" name="_token" value="' + tokens.delete + '">' +
-                                '<button type="submit" class="btn btn-danger"><i class="bi bi-trash me-1"></i>Supprimer</button>' +
-                            '</form>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>' +
-            '</div>'
-        );
-    }
-
-    function createActiveUserRow(user, tokens) {
-        createSuspendModal(user, tokens);
-        createDeleteModal(user, tokens, false);
-
-        var tr = document.createElement('tr');
-        tr.setAttribute('data-user-id', user.id);
-        tr.innerHTML =
-            '<td><div class="d-flex align-items-center gap-2"><i class="bi bi-person-circle text-primary"></i><strong>' + escapeHtml(user.pseudo) + '</strong></div></td>' +
-            '<td><span class="text-secondary">' + escapeHtml(user.email) + '</span></td>' +
-            '<td><span class="text-secondary small">' + user.createdAt + '</span></td>' +
-            '<td class="text-end"><div class="btn-group btn-group-sm">' +
-                '<button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#suspendModal' + user.id + '" title="Suspendre"><i class="bi bi-pause-circle"></i></button>' +
-                '<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal' + user.id + '" title="Supprimer"><i class="bi bi-trash"></i></button>' +
-            '</div></td>';
-        return tr;
-    }
-
-    function createSuspendedUserRow(user, tokens) {
-        createDeleteModal(user, tokens, true);
-
-        var tr = document.createElement('tr');
-        tr.setAttribute('data-user-id', user.id);
-        tr.setAttribute('data-suspended', 'true');
-        tr.innerHTML =
-            '<td><div class="d-flex align-items-center gap-2"><i class="bi bi-person-circle text-warning"></i><strong>' + escapeHtml(user.pseudo) + '</strong><span class="badge bg-warning text-dark"><i class="bi bi-pause-circle me-1"></i>Suspendu</span></div></td>' +
-            '<td><span class="text-secondary">' + escapeHtml(user.email) + '</span></td>' +
-            '<td><span class="text-secondary small">' + user.createdAt + '</span></td>' +
-            '<td class="text-end"><div class="btn-group btn-group-sm">' +
-                '<form method="post" action="/employee/users/' + user.id + '/unsuspend" class="d-inline"><input type="hidden" name="_token" value="' + tokens.unsuspend + '"><button type="submit" class="btn btn-success" title="Réactiver"><i class="bi bi-play-circle me-1"></i>Réactiver</button></form>' +
-                '<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteSuspendedModal' + user.id + '" title="Supprimer"><i class="bi bi-trash"></i></button>' +
-            '</div></td>';
-        return tr;
-    }
-
-    function cleanupModalEffects() {
-        document.querySelectorAll('.modal-backdrop').forEach(function(b) { b.remove(); });
-        document.body.classList.remove('modal-open');
-        document.body.style.removeProperty('overflow');
-        document.body.style.removeProperty('padding-right');
-    }
-
-    function createTableIfNeeded(sectionId) {
-        var section = document.getElementById(sectionId);
-        if (!section) return null;
-
-        var tbody = section.querySelector('table tbody');
-        if (!tbody || section.querySelector('.empty-state')) {
-            section.innerHTML =
-                '<div class="table-responsive">' +
-                    '<table class="table table-hover align-middle mb-0">' +
-                        '<thead class="table-dark"><tr><th>Pseudo</th><th>Email</th><th>Inscrit le</th><th class="text-end">Actions</th></tr></thead>' +
-                        '<tbody></tbody>' +
-                    '</table>' +
-                '</div>';
-            tbody = section.querySelector('tbody');
-        }
-        return tbody;
-    }
-
-    document.addEventListener('submit', async function(e) {
-        var form = e.target;
-        if (!form.action || !form.action.includes('/employee/users/')) return;
-        if (form.classList.contains('submitting')) { e.preventDefault(); return; }
-
-        e.preventDefault();
-        form.classList.add('submitting');
-
-        var submitBtn = form.querySelector('button[type="submit"]');
-        var originalHTML = submitBtn ? submitBtn.innerHTML : '';
-        if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>...';
-        }
-
-        var url = form.action;
-
-        try {
-            var response = await fetch(url, {
-                method: 'POST',
-                body: new FormData(form),
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            });
-            var data = await response.json();
-
-            if (data.success) {
-                showToast(data.message, 'success');
-
-                var modal = form.closest('.modal');
-                if (modal) {
-                    var bsModal = bootstrap.Modal.getInstance(modal);
-                    if (bsModal) {
-                        modal.addEventListener('hidden.bs.modal', cleanupModalEffects, { once: true });
-                        bsModal.hide();
-                    } else {
-                        modal.classList.remove('show');
-                        modal.style.display = 'none';
-                        cleanupModalEffects();
-                    }
-                    setTimeout(cleanupModalEffects, 300);
-                }
-
-                if (url.includes('/suspend') && !url.includes('/unsuspend')) {
-                    var userId = data.user.id;
-                    var userRow = document.querySelector('#active-users-body tr[data-user-id="' + userId + '"]');
-                    if (userRow) {
-                        userRow.style.transition = 'opacity 0.3s ease';
-                        userRow.style.opacity = '0';
-                        setTimeout(function() {
-                            userRow.remove();
-                            if (!document.querySelector('#suspended-users-body tr[data-user-id="' + userId + '"]')) {
-                                var tbody = createTableIfNeeded('suspended-users-body');
-                                if (tbody) {
-                                    var newRow = createSuspendedUserRow(data.user, data.tokens);
-                                    newRow.style.opacity = '0';
-                                    tbody.insertBefore(newRow, tbody.firstChild);
-                                    setTimeout(function() { newRow.style.transition = 'opacity 0.3s ease'; newRow.style.opacity = '1'; }, 50);
-                                }
-                            }
-                            checkEmptyState('active-users-body', true);
-                            updateCounters();
-                        }, 300);
-                    }
-                } else if (url.includes('/unsuspend')) {
-                    var userId = data.user.id;
-                    var userRow = document.querySelector('#suspended-users-body tr[data-user-id="' + userId + '"]');
-                    if (userRow) {
-                        userRow.style.transition = 'opacity 0.3s ease';
-                        userRow.style.opacity = '0';
-                        setTimeout(function() {
-                            userRow.remove();
-                            if (!document.querySelector('#active-users-body tr[data-user-id="' + userId + '"]')) {
-                                var tbody = createTableIfNeeded('active-users-body');
-                                if (tbody) {
-                                    var newRow = createActiveUserRow(data.user, data.tokens);
-                                    newRow.style.opacity = '0';
-                                    tbody.insertBefore(newRow, tbody.firstChild);
-                                    setTimeout(function() { newRow.style.transition = 'opacity 0.3s ease'; newRow.style.opacity = '1'; }, 50);
-                                }
-                            }
-                            checkEmptyState('suspended-users-body', false);
-                            updateCounters();
-                        }, 300);
-                    }
-                } else if (url.includes('/delete')) {
-                    var userId = data.userId;
-                    var userRow = document.querySelector('#active-users-body tr[data-user-id="' + userId + '"]') ||
-                                  document.querySelector('#suspended-users-body tr[data-user-id="' + userId + '"]');
-                    if (userRow) {
-                        var wasActive = userRow.closest('#active-users-body') !== null;
-                        userRow.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-                        userRow.style.opacity = '0';
-                        userRow.style.transform = 'translateX(100px)';
-                        setTimeout(function() {
-                            userRow.remove();
-                            checkEmptyState(wasActive ? 'active-users-body' : 'suspended-users-body', wasActive);
-                            updateCounters();
-                        }, 300);
-                    }
-                }
-            } else {
-                showToast(data.message || 'Erreur', 'danger');
-            }
-        } catch (error) {
-            showToast('Une erreur est survenue. Veuillez réessayer.', 'danger');
-        } finally {
-            setTimeout(cleanupModalEffects, 500);
-            form.classList.remove('submitting');
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalHTML;
-            }
-        }
-    });
-}
-
-// ============================================================================
 // INIT ALL
 // ============================================================================
 function initAll() {
@@ -841,12 +380,8 @@ function initAll() {
     initStarRating();
     initDropdowns();
     initBackdropCleanup();
-    initConfirmDialogs();
     initContactCounter();
-    initAdminTabs();
-    initEmployeeForm();
     initCharacterPreview();
-    initUserManagement();
 }
 
 onReady(initAll);
