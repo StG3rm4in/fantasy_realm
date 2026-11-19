@@ -30,7 +30,9 @@
                         <h5 class="mb-0">{{ personnage.nom }}</h5>
                     </div>
 
-                    {{ form_start(form) }}
+                    {# id commentaire-form : les étoiles sont gérées par initStarRating (app.js),
+                       comme sur la page détail ; novalidate : les boutons radio sont cachés #}
+                    {{ form_start(form, { 'attr': { 'id': 'commentaire-form', 'novalidate': 'novalidate' } }) }}
                         <div class="mb-4">
                             <label class="form-label fw-bold">Note</label>
                             <div class="star-rating mb-2">
@@ -54,7 +56,7 @@
                         <div class="mb-4">
                             {{ form_label(form.commentaire, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
                             {{ form_widget(form.commentaire) }}
-                            <small class="text-muted">Minimum 10 caractères, maximum 1000 caractères</small>
+                            <small class="text-muted">Minimum 10 caractères, maximum 500 caractères</small>
                             {{ form_errors(form.commentaire) }}
                         </div>
 
